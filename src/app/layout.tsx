@@ -32,9 +32,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className="dark">
+    <html lang="vi" className="dark" suppressHydrationWarning>
       <body
         className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased bg-[#0A0A0F] text-white`}
+        suppressHydrationWarning
       >
         {children}
       </body>

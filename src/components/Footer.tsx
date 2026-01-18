@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 export default function Footer() {
@@ -48,6 +50,16 @@ export default function Footer() {
             ),
         },
     ];
+
+    // Handle scroll to section
+    const scrollToContact = (e: React.MouseEvent) => {
+        e.preventDefault();
+        const element = document.getElementById("contact");
+        if (element) {
+            const offsetTop = element.offsetTop - 100;
+            window.scrollTo({ top: offsetTop, behavior: "smooth" });
+        }
+    };
 
     return (
         <footer id="contact" className="relative py-16 border-t border-white/5">
@@ -113,9 +125,9 @@ export default function Footer() {
                         <span className="text-lg font-bold text-white">Action</span>
                     </div>
 
-                    {/* Copyright */}
+                    {/* Copyright - Use static year to avoid hydration mismatch */}
                     <p className="text-gray-500 text-sm">
-                        © {new Date().getFullYear()} IAction. Tất cả quyền được bảo lưu.
+                        © 2025 IAction. Tất cả quyền được bảo lưu.
                     </p>
                 </div>
             </div>

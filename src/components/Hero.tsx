@@ -1,4 +1,6 @@
-import Link from "next/link";
+"use client";
+
+import { handleScrollClick } from "@/lib/scroll";
 
 export default function Hero() {
     return (
@@ -38,8 +40,9 @@ export default function Hero() {
 
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up animate-delay-300">
-                    <Link
+                    <a
                         href="#products"
+                        onClick={(e) => handleScrollClick(e, "products")}
                         className="btn-primary px-8 py-4 rounded-full font-semibold text-lg inline-flex items-center gap-3 cursor-pointer"
                     >
                         Xem sản phẩm
@@ -56,9 +59,10 @@ export default function Hero() {
                                 d="M19 9l-7 7-7-7"
                             />
                         </svg>
-                    </Link>
-                    <Link
+                    </a>
+                    <a
                         href="#about"
+                        onClick={(e) => handleScrollClick(e, "about")}
                         className="btn-outline px-8 py-4 rounded-full font-semibold text-lg inline-flex items-center gap-3 cursor-pointer"
                     >
                         Về tác giả
@@ -75,7 +79,7 @@ export default function Hero() {
                                 d="M17 8l4 4m0 0l-4 4m4-4H3"
                             />
                         </svg>
-                    </Link>
+                    </a>
                 </div>
 
                 {/* Scroll Indicator */}

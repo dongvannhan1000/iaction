@@ -1,11 +1,30 @@
-export default function About() {
-    const skills = [
-        { name: "React / Next.js", level: 95 },
-        { name: "TypeScript", level: 90 },
-        { name: "Node.js", level: 85 },
-        { name: "Mobile Development", level: 80 },
-        { name: "UI/UX Design", level: 75 },
-    ];
+import type { SanitySiteSettings } from "../../sanity/lib/types";
+import { urlFor } from "../../sanity/lib/client";
+
+interface AboutProps {
+    settings: SanitySiteSettings | null;
+}
+
+// Default values when no Sanity data
+const defaultSkills = [
+    { name: "React / Next.js", level: 95 },
+    { name: "TypeScript", level: 90 },
+    { name: "Node.js", level: 85 },
+    { name: "Mobile Development", level: 80 },
+    { name: "UI/UX Design", level: 75 },
+];
+
+const defaultStats = [
+    { value: "4+", label: "Dự án" },
+    { value: "2+", label: "Năm KN" },
+    { value: "100%", label: "Đam mê" },
+];
+
+export default function About({ settings }: AboutProps) {
+    const skills = settings?.skills?.length ? settings.skills : defaultSkills;
+    const stats = settings?.stats?.length ? settings.stats : defaultStats;
+    const name = settings?.aboutName || "IAction Developer";
+    const role = settings?.aboutRole || "Full-stack Developer & Product Creator";
 
     return (
         <section id="about" className="py-24 relative overflow-hidden">
@@ -24,32 +43,34 @@ export default function About() {
 
                             {/* Main Card */}
                             <div className="relative glass rounded-3xl p-8">
-                                {/* Avatar Placeholder */}
-                                <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center glow-red">
-                                    <span className="text-5xl font-bold text-white">IA</span>
-                                </div>
+                                {/* Avatar */}
+                                {settings?.aboutAvatar ? (
+                                    <img
+                                        src={urlFor(settings.aboutAvatar).width(128).height(128).url()}
+                                        alt={name}
+                                        className="w-32 h-32 mx-auto mb-6 rounded-full object-cover glow-red"
+                                    />
+                                ) : (
+                                    <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center glow-red">
+                                        <span className="text-5xl font-bold text-white">IA</span>
+                                    </div>
+                                )}
 
                                 <h3 className="text-2xl font-bold text-white text-center mb-2">
-                                    IAction Developer
+                                    {name}
                                 </h3>
                                 <p className="text-gray-400 text-center mb-6">
-                                    Full-stack Developer & Product Creator
+                                    {role}
                                 </p>
 
                                 {/* Stats */}
                                 <div className="grid grid-cols-3 gap-4 text-center">
-                                    <div>
-                                        <div className="text-2xl font-bold text-red-400">4+</div>
-                                        <div className="text-sm text-gray-500">Dự án</div>
-                                    </div>
-                                    <div>
-                                        <div className="text-2xl font-bold text-red-400">2+</div>
-                                        <div className="text-sm text-gray-500">Năm KN</div>
-                                    </div>
-                                    <div>
-                                        <div className="text-2xl font-bold text-red-400">100%</div>
-                                        <div className="text-sm text-gray-500">Đam mê</div>
-                                    </div>
+                                    {stats.map((stat, index) => (
+                                        <div key={index}>
+                                            <div className="text-2xl font-bold text-red-400">{stat.value}</div>
+                                            <div className="text-sm text-gray-500">{stat.label}</div>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
@@ -62,16 +83,31 @@ export default function About() {
                             <span className="text-gradient">tác giả</span>
                         </h2>
 
-                        <p className="text-gray-400 text-lg mb-6 leading-relaxed">
-                            Xin chào! Tôi là một developer đam mê xây dựng các sản phẩm phần mềm
-                            giải quyết vấn đề thực tế. Mỗi dự án đều được tạo ra với sự chú ý
-                            đến chi tiết và trải nghiệm người dùng.
-                        </p>
-
-                        <p className="text-gray-400 text-lg mb-8 leading-relaxed">
-                            Từ ý tưởng đến sản phẩm hoàn chỉnh, tôi tin vào việc tạo ra những
-                            ứng dụng không chỉ đẹp mà còn hữu ích và dễ sử dụng.
-                        </p>
+                        <div className="text-gray-400 text-lg mb-8 leading-relaxed space-y-4">
+                            {settings?.aboutContent ? (
+                                // Render Portable Text (simplified - just paragraphs for now)
+                                settings.aboutContent.map((block: unknown, index: number) => {
+                                    const blockData = block as { _type?: string; children?: Array<{ text?: string }> };
+                                    if (blockData._type === "block" && blockData.children) {
+                                        const text = blockData.children.map((child) => child.text || "").join("");
+                                        return <p key={index}>{text}</p>;
+                                    }
+                                    return null;
+                                })
+                            ) : (
+                                <>
+                                    <p>
+                                        Xin chào! Tôi là một developer đam mê xây dựng các sản phẩm phần mềm
+                                        giải quyết vấn đề thực tế. Mỗi dự án đều được tạo ra với sự chú ý
+                                        đến chi tiết và trải nghiệm người dùng.
+                                    </p>
+                                    <p>
+                                        Từ ý tưởng đến sản phẩm hoàn chỉnh, tôi tin vào việc tạo ra những
+                                        ứng dụng không chỉ đẹp mà còn hữu ích và dễ sử dụng.
+                                    </p>
+                                </>
+                            )}
+                        </div>
 
                         {/* Skills */}
                         <div className="space-y-4">

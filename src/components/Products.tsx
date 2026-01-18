@@ -3,86 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import PaymentModal from "./PaymentModal";
-
-// Sample product data - will be replaced with Sanity data later
-const products = [
-    {
-        id: 1,
-        name: "TaskFlow Pro",
-        description: "Ứng dụng quản lý công việc thông minh với AI hỗ trợ lập kế hoạch và theo dõi tiến độ.",
-        icon: "cube",
-        platforms: ["Web", "iOS", "Android"],
-        demoUrl: "#",
-        productUrl: "#",
-        price: 299000,
-        originalPrice: 499000,
-        isPaid: true,
-        featured: true,
-    },
-    {
-        id: 2,
-        name: "CodeSnap",
-        description: "Tạo ảnh code đẹp mắt để chia sẻ lên mạng xã hội với nhiều theme và tùy chỉnh.",
-        icon: "code",
-        platforms: ["Web"],
-        demoUrl: "#",
-        productUrl: "#",
-        price: 0,
-        isPaid: false,
-        featured: false,
-    },
-    {
-        id: 3,
-        name: "BudgetMaster",
-        description: "Theo dõi chi tiêu cá nhân, lập ngân sách và phân tích tài chính một cách dễ dàng.",
-        icon: "chart",
-        platforms: ["iOS", "Android"],
-        demoUrl: "#",
-        productUrl: "#",
-        price: 149000,
-        originalPrice: 249000,
-        isPaid: true,
-        featured: false,
-    },
-    {
-        id: 4,
-        name: "DevNotes",
-        description: "Ghi chú dành cho developer với syntax highlighting, markdown và đồng bộ đám mây.",
-        icon: "document",
-        platforms: ["Web", "Desktop"],
-        demoUrl: "#",
-        productUrl: "#",
-        price: 199000,
-        isPaid: true,
-        featured: true,
-    },
-    {
-        id: 5,
-        name: "ScreenRecorder",
-        description: "Quay màn hình chất lượng cao với nhiều tính năng chỉnh sửa video tích hợp.",
-        icon: "video",
-        platforms: ["Windows", "macOS"],
-        demoUrl: "#",
-        productUrl: "#",
-        price: 249000,
-        isPaid: true,
-        featured: false,
-    },
-    {
-        id: 6,
-        name: "APIMonitor",
-        description: "Giám sát API endpoints, alert khi downtime và phân tích response time.",
-        icon: "server",
-        platforms: ["Web"],
-        demoUrl: "#",
-        productUrl: "#",
-        price: 0,
-        isPaid: false,
-        featured: false,
-    },
-];
-
-type Product = typeof products[0];
+import type { SanityProduct } from "../../sanity/lib/types";
 
 // Icon components
 const Icons = {
@@ -118,14 +39,12 @@ const Icons = {
     ),
 };
 
-function ProductCard({
-    product,
-    onBuyClick
-}: {
-    product: Product;
-    onBuyClick: (product: Product) => void;
-}) {
-    // Format price
+interface ProductCardProps {
+    product: SanityProduct;
+    onBuyClick: (product: SanityProduct) => void;
+}
+
+function ProductCard({ product, onBuyClick }: ProductCardProps) {
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat("vi-VN", {
             style: "currency",
@@ -138,27 +57,23 @@ function ProductCard({
             className={`group relative rounded-2xl p-6 glass card-hover cursor-pointer ${product.featured ? "md:col-span-2" : ""
                 }`}
         >
-            {/* Featured Badge */}
             {product.featured && (
                 <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-red-500/20 border border-red-500/30">
                     <span className="text-xs text-red-400 font-medium">Featured</span>
                 </div>
             )}
 
-            {/* Icon */}
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-500/20 to-red-600/10 flex items-center justify-center mb-6 group-hover:glow-red-sm transition-all">
-                {Icons[product.icon as keyof typeof Icons] || Icons.cube}
+                {Icons[product.iconType as keyof typeof Icons] || Icons.cube}
             </div>
 
-            {/* Content */}
             <h3 className="text-xl font-bold text-white mb-3 group-hover:text-red-400 transition-colors">
                 {product.name}
             </h3>
             <p className="text-gray-400 mb-4 line-clamp-2">{product.description}</p>
 
-            {/* Platforms */}
             <div className="flex flex-wrap gap-2 mb-4">
-                {product.platforms.map((platform) => (
+                {product.platforms?.map((platform) => (
                     <span
                         key={platform}
                         className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-gray-300 border border-white/10"
@@ -168,7 +83,6 @@ function ProductCard({
                 ))}
             </div>
 
-            {/* Price */}
             <div className="mb-4">
                 {product.isPaid ? (
                     <div className="flex items-baseline gap-2">
@@ -186,7 +100,6 @@ function ProductCard({
                 )}
             </div>
 
-            {/* Actions */}
             <div className="flex items-center gap-3">
                 {product.isPaid ? (
                     <button
@@ -200,7 +113,7 @@ function ProductCard({
                     </button>
                 ) : (
                     <Link
-                        href={product.productUrl}
+                        href={product.productUrl || "#"}
                         className="flex-1 btn-primary py-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 cursor-pointer"
                     >
                         Dùng ngay
@@ -209,26 +122,31 @@ function ProductCard({
                         </svg>
                     </Link>
                 )}
-                <Link
-                    href={product.demoUrl}
-                    className="px-4 py-3 rounded-xl btn-outline font-medium text-sm flex items-center justify-center gap-2 cursor-pointer"
-                >
-                    Demo
-                </Link>
+                {product.demoUrl && (
+                    <Link
+                        href={product.demoUrl}
+                        className="px-4 py-3 rounded-xl btn-outline font-medium text-sm flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                        Demo
+                    </Link>
+                )}
             </div>
         </div>
     );
 }
 
-// Number of products to show initially
+interface ProductsProps {
+    products: SanityProduct[];
+}
+
 const INITIAL_PRODUCTS_COUNT = 4;
 
-export default function Products() {
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+export default function Products({ products }: ProductsProps) {
+    const [selectedProduct, setSelectedProduct] = useState<SanityProduct | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showAll, setShowAll] = useState(false);
 
-    const handleBuyClick = (product: Product) => {
+    const handleBuyClick = (product: SanityProduct) => {
         setSelectedProduct(product);
         setIsModalOpen(true);
     };
@@ -238,7 +156,6 @@ export default function Products() {
         setSelectedProduct(null);
     };
 
-    // Show limited products or all
     const displayedProducts = showAll
         ? products
         : products.slice(0, INITIAL_PRODUCTS_COUNT);
@@ -246,14 +163,35 @@ export default function Products() {
     const hasMoreProducts = products.length > INITIAL_PRODUCTS_COUNT;
     const remainingCount = products.length - INITIAL_PRODUCTS_COUNT;
 
+    // If no products from Sanity, show empty state
+    if (!products || products.length === 0) {
+        return (
+            <section id="products" className="py-24 relative">
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-red-950/5 to-transparent" />
+                <div className="relative z-10 max-w-7xl mx-auto px-6">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                            <span className="text-white">Sản phẩm </span>
+                            <span className="text-gradient">nổi bật</span>
+                        </h2>
+                        <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                            Những ứng dụng và phần mềm tôi đã xây dựng với tâm huyết
+                        </p>
+                    </div>
+                    <div className="text-center py-12">
+                        <p className="text-gray-500">Chưa có sản phẩm nào. Thêm sản phẩm trong <a href="/studio" className="text-red-400 hover:underline">Sanity Studio</a>.</p>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
     return (
         <>
             <section id="products" className="py-24 relative">
-                {/* Background */}
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-red-950/5 to-transparent" />
 
                 <div className="relative z-10 max-w-7xl mx-auto px-6">
-                    {/* Section Header */}
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-bold mb-4">
                             <span className="text-white">Sản phẩm </span>
@@ -264,18 +202,16 @@ export default function Products() {
                         </p>
                     </div>
 
-                    {/* Products Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {displayedProducts.map((product) => (
                             <ProductCard
-                                key={product.id}
+                                key={product._id}
                                 product={product}
                                 onBuyClick={handleBuyClick}
                             />
                         ))}
                     </div>
 
-                    {/* Show More / Show Less Button */}
                     {hasMoreProducts && (
                         <div className="text-center mt-12">
                             <button
@@ -285,35 +221,15 @@ export default function Products() {
                                 {showAll ? (
                                     <>
                                         Thu gọn
-                                        <svg
-                                            className="w-5 h-5"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M5 15l7-7 7 7"
-                                            />
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                                         </svg>
                                     </>
                                 ) : (
                                     <>
                                         Xem thêm {remainingCount} sản phẩm
-                                        <svg
-                                            className="w-5 h-5"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M19 9l-7 7-7-7"
-                                            />
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                         </svg>
                                     </>
                                 )}
@@ -323,11 +239,16 @@ export default function Products() {
                 </div>
             </section>
 
-            {/* Payment Modal */}
             <PaymentModal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
-                product={selectedProduct}
+                product={selectedProduct ? {
+                    id: parseInt(selectedProduct._id.replace(/\D/g, '')) || 1,
+                    name: selectedProduct.name,
+                    description: selectedProduct.description,
+                    price: selectedProduct.price,
+                    originalPrice: selectedProduct.originalPrice,
+                } : null}
             />
         </>
     );

@@ -1,6 +1,6 @@
 import { client } from "./client";
-import { productsQuery, siteSettingsQuery, productBySlugQuery } from "./queries";
-import type { SanityProduct, SanitySiteSettings } from "./types";
+import { productsQuery, siteSettingsQuery, productBySlugQuery, coursesQuery, blogPostsQuery, blogPostBySlugQuery } from "./queries";
+import type { SanityProduct, SanitySiteSettings, SanityCourse, SanityBlogPost } from "./types";
 
 /**
  * Fetch all products from Sanity
@@ -40,3 +40,43 @@ export async function getProductBySlug(slug: string): Promise<SanityProduct | nu
         return null;
     }
 }
+
+/**
+ * Fetch all courses from Sanity
+ */
+export async function getCourses(): Promise<SanityCourse[]> {
+    try {
+        const courses = await client.fetch<SanityCourse[]>(coursesQuery);
+        return courses || [];
+    } catch (error) {
+        console.error("Error fetching courses:", error);
+        return [];
+    }
+}
+
+/**
+ * Fetch all blog posts from Sanity
+ */
+export async function getBlogPosts(): Promise<SanityBlogPost[]> {
+    try {
+        const posts = await client.fetch<SanityBlogPost[]>(blogPostsQuery);
+        return posts || [];
+    } catch (error) {
+        console.error("Error fetching blog posts:", error);
+        return [];
+    }
+}
+
+/**
+ * Fetch single blog post by slug (with full content)
+ */
+export async function getBlogPostBySlug(slug: string): Promise<SanityBlogPost | null> {
+    try {
+        const post = await client.fetch<SanityBlogPost>(blogPostBySlugQuery, { slug });
+        return post;
+    } catch (error) {
+        console.error("Error fetching blog post:", error);
+        return null;
+    }
+}
+

@@ -78,14 +78,21 @@ export const siteSettings = defineType({
         defineField({
             name: "skills",
             title: "Kỹ năng",
+            description: "Liệt kê kỹ năng theo danh mục (VD: Frontend: React, Next.js)",
             type: "array",
             of: [
                 {
                     type: "object",
                     fields: [
-                        { name: "name", title: "Tên kỹ năng", type: "string" },
-                        { name: "level", title: "Mức độ (%)", type: "number" },
+                        { name: "category", title: "Danh mục", type: "string", description: "VD: Frontend, Backend, Database" },
+                        { name: "items", title: "Các kỹ năng", type: "string", description: "VD: React, Next.js, TypeScript" },
                     ],
+                    preview: {
+                        select: {
+                            title: "category",
+                            subtitle: "items",
+                        },
+                    },
                 },
             ],
         }),

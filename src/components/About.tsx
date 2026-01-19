@@ -7,11 +7,10 @@ interface AboutProps {
 
 // Default values when no Sanity data
 const defaultSkills = [
-    { name: "React / Next.js", level: 95 },
-    { name: "TypeScript", level: 90 },
-    { name: "Node.js", level: 85 },
-    { name: "Mobile Development", level: 80 },
-    { name: "UI/UX Design", level: 75 },
+    { category: "Frontend", items: "React, Next.js, TypeScript" },
+    { category: "Backend", items: "Node.js, NestJS, Express" },
+    { category: "Database", items: "PostgreSQL, MongoDB, Redis" },
+    { category: "DevOps", items: "Docker, AWS, CI/CD" },
 ];
 
 const defaultStats = [
@@ -21,10 +20,29 @@ const defaultStats = [
 ];
 
 export default function About({ settings }: AboutProps) {
-    const skills = settings?.skills?.length ? settings.skills : defaultSkills;
+    // Convert old skills format (name, level) to new format (category, items)
+    const rawSkills = settings?.skills;
+    let skills: Array<{ category: string; items: string }>;
+
+    if (rawSkills?.length) {
+        // Check if skills are in new format (has 'category' and 'items')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const firstSkill = rawSkills[0] as any;
+        if (firstSkill.category && firstSkill.items) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            skills = rawSkills as any;
+        } else {
+            // Old format - convert or use defaults
+            skills = defaultSkills;
+        }
+    } else {
+        skills = defaultSkills;
+    }
+
     const stats = settings?.stats?.length ? settings.stats : defaultStats;
     const name = settings?.aboutName || "IAction Developer";
     const role = settings?.aboutRole || "Full-stack Developer & Product Creator";
+    const hasSkills = skills.length > 0;
 
     return (
         <section id="about" className="py-24 relative overflow-hidden">
@@ -33,7 +51,7 @@ export default function About({ settings }: AboutProps) {
             <div className="absolute bottom-0 left-0 w-80 h-80 bg-red-500/5 rounded-full blur-3xl" />
 
             <div className="relative z-10 max-w-7xl mx-auto px-6">
-                <div className="grid lg:grid-cols-2 gap-16 items-center">
+                <div className="grid lg:grid-cols-2 gap-16 items-start">
                     {/* Left - Image/Avatar */}
                     <div className="relative">
                         <div className="relative w-full max-w-md mx-auto">
@@ -63,10 +81,10 @@ export default function About({ settings }: AboutProps) {
                                     {role}
                                 </p>
 
-                                {/* Stats */}
-                                <div className="grid grid-cols-3 gap-4 text-center">
+                                {/* Stats - Flexible layout that centers based on item count */}
+                                <div className="flex flex-wrap justify-center gap-6 text-center">
                                     {stats.map((stat, index) => (
-                                        <div key={index}>
+                                        <div key={index} className="min-w-[80px]">
                                             <div className="text-2xl font-bold text-red-400">{stat.value}</div>
                                             <div className="text-sm text-gray-500">{stat.label}</div>
                                         </div>
@@ -77,7 +95,7 @@ export default function About({ settings }: AboutProps) {
                     </div>
 
                     {/* Right - Content */}
-                    <div>
+                    <div className={hasSkills ? "" : "flex flex-col justify-center h-full"}>
                         <h2 className="text-4xl md:text-5xl font-bold mb-6">
                             <span className="text-white">Về </span>
                             <span className="text-gradient">tác giả</span>
@@ -109,27 +127,26 @@ export default function About({ settings }: AboutProps) {
                             )}
                         </div>
 
-                        {/* Skills */}
-                        <div className="space-y-4">
-                            <h4 className="text-lg font-semibold text-white mb-4">Kỹ năng</h4>
-                            {skills.map((skill) => (
-                                <div key={skill.name}>
-                                    <div className="flex justify-between mb-2">
-                                        <span className="text-gray-300">{skill.name}</span>
-                                        <span className="text-gray-500">{skill.level}%</span>
-                                    </div>
-                                    <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full bg-gradient-to-r from-red-600 to-red-400 rounded-full transition-all duration-1000"
-                                            style={{ width: `${skill.level}%` }}
-                                        />
-                                    </div>
+                        {/* Skills - Category-based listing */}
+                        {hasSkills && (
+                            <div className="space-y-3">
+                                <h4 className="text-lg font-semibold text-white mb-4">Kỹ năng</h4>
+                                <div className="space-y-2">
+                                    {skills.map((skill, index) => (
+                                        <div key={index} className="flex flex-wrap gap-2">
+                                            <span className="text-red-400 font-medium min-w-[100px]">
+                                                {skill.category}:
+                                            </span>
+                                            <span className="text-gray-300">{skill.items}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
         </section>
     );
 }
+

@@ -20,8 +20,8 @@ export interface SanityProduct {
 }
 
 export interface SanitySkill {
-    name: string;
-    level: number;
+    category: string;
+    items: string;
 }
 
 export interface SanityStat {
@@ -55,3 +55,46 @@ export interface SanitySiteSettings {
     phone?: string;
     socialLinks: SanitySocialLink[];
 }
+
+export interface SanityCourse {
+    _id: string;
+    title: string;
+    slug: string;
+    description: string;
+    thumbnail?: {
+        _type: "image";
+        asset: {
+            _ref: string;
+        };
+    };
+    iconType?: "academy" | "video" | "book" | "certificate" | "code" | "chart";
+    level?: "beginner" | "intermediate" | "advanced";
+    duration?: string;
+    lessonsCount?: number;
+    price: number;
+    originalPrice?: number;
+    isPaid: boolean;
+    featured: boolean;
+    courseUrl?: string;
+}
+
+export interface SanityBlogPost {
+    _id: string;
+    title: string;
+    slug: string;
+    excerpt: string;
+    thumbnail?: {
+        _type: "image";
+        asset: {
+            _ref: string;
+        };
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    content: any[]; // Portable Text blocks
+    category?: "tech" | "business" | "lifestyle" | "tutorial";
+    author?: string;
+    publishedAt?: string;
+    readTime?: number;
+    featured: boolean;
+}
+

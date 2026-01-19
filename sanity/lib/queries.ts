@@ -57,3 +57,57 @@ export const productBySlugQuery = groq`
     productUrl
   }
 `;
+
+// Get all courses ordered by 'order' field
+export const coursesQuery = groq`
+  *[_type == "course"] | order(order asc) {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    thumbnail,
+    iconType,
+    level,
+    duration,
+    lessonsCount,
+    price,
+    originalPrice,
+    isPaid,
+    featured,
+    courseUrl
+  }
+`;
+
+// Get all blog posts ordered by publishedAt
+export const blogPostsQuery = groq`
+  *[_type == "blogPost"] | order(publishedAt desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    excerpt,
+    thumbnail,
+    category,
+    author,
+    publishedAt,
+    readTime,
+    featured
+  }
+`;
+
+// Get single blog post by slug (with full content)
+export const blogPostBySlugQuery = groq`
+  *[_type == "blogPost" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    excerpt,
+    thumbnail,
+    content,
+    category,
+    author,
+    publishedAt,
+    readTime,
+    featured
+  }
+`;
+

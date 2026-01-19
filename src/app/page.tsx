@@ -22,14 +22,15 @@ export default async function Home() {
     <>
       <Navbar />
       <main>
-        <Hero />
-        <Products products={products} />
-        <Courses courses={courses} />
-        <Blog posts={blogPosts} />
+        <Hero settings={settings} />
+        <Products products={products} settings={settings} />
+        <Courses courses={courses} settings={settings} />
+        <Blog posts={blogPosts} settings={settings} />
         <About settings={settings} />
       </main>
       <Footer settings={settings} />
     </>
   );
 }
+
 

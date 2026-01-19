@@ -1,8 +1,16 @@
 "use client";
 
 import { handleScrollClick } from "@/lib/scroll";
+import type { SanitySiteSettings } from "../../sanity/lib/types";
 
-export default function Hero() {
+interface HeroProps {
+    settings: SanitySiteSettings | null;
+}
+
+export default function Hero({ settings }: HeroProps) {
+    const subtitle = settings?.heroSubtitle || "Nơi tôi chia sẻ những ứng dụng và phần mềm được tạo ra với đam mê. Mỗi sản phẩm là một hành trình từ ý tưởng đến hiện thực.";
+    const badge = settings?.heroBadge || "Khám phá các sản phẩm mới nhất";
+
     return (
         <section
             id="home"
@@ -19,7 +27,7 @@ export default function Hero() {
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 animate-fade-in-up">
                     <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
                     <span className="text-sm text-gray-300">
-                        Khám phá các sản phẩm mới nhất
+                        {badge}
                     </span>
                 </div>
 
@@ -34,8 +42,7 @@ export default function Hero() {
 
                 {/* Subtitle */}
                 <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 animate-fade-in-up animate-delay-200">
-                    Nơi tôi chia sẻ những ứng dụng và phần mềm được tạo ra với đam mê.
-                    Mỗi sản phẩm là một hành trình từ ý tưởng đến hiện thực.
+                    {subtitle}
                 </p>
 
                 {/* CTA Buttons */}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import type { SanityCourse } from "../../sanity/lib/types";
+import type { SanityCourse, SanitySiteSettings } from "../../sanity/lib/types";
 import { urlFor } from "../../sanity/lib/client";
 
 // Icon components for courses
@@ -145,12 +145,14 @@ function CourseCard({ course }: CourseCardProps) {
 
 interface CoursesProps {
     courses: SanityCourse[];
+    settings: SanitySiteSettings | null;
 }
 
 const INITIAL_COURSES_COUNT = 4;
 
-export default function Courses({ courses }: CoursesProps) {
+export default function Courses({ courses, settings }: CoursesProps) {
     const [showAll, setShowAll] = useState(false);
+    const subtitle = settings?.coursesSubtitle || "Các khóa học chất lượng giúp bạn nâng cao kỹ năng";
 
     const displayedCourses = showAll
         ? courses
@@ -171,7 +173,7 @@ export default function Courses({ courses }: CoursesProps) {
                             <span className="text-gradient">nổi bật</span>
                         </h2>
                         <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-                            Các khóa học chất lượng giúp bạn nâng cao kỹ năng
+                            {subtitle}
                         </p>
                     </div>
                     <div className="text-center py-12">
@@ -193,7 +195,7 @@ export default function Courses({ courses }: CoursesProps) {
                         <span className="text-gradient">nổi bật</span>
                     </h2>
                     <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-                        Các khóa học chất lượng giúp bạn nâng cao kỹ năng
+                        {subtitle}
                     </p>
                 </div>
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import type { SanityBlogPost } from "../../sanity/lib/types";
+import type { SanityBlogPost, SanitySiteSettings } from "../../sanity/lib/types";
 import { urlFor } from "../../sanity/lib/client";
 
 const categoryLabels: Record<string, { text: string; color: string }> = {
@@ -85,12 +85,14 @@ function BlogCard({ post }: BlogCardProps) {
 
 interface BlogProps {
     posts: SanityBlogPost[];
+    settings: SanitySiteSettings | null;
 }
 
 const INITIAL_POSTS_COUNT = 4;
 
-export default function Blog({ posts }: BlogProps) {
+export default function Blog({ posts, settings }: BlogProps) {
     const [showAll, setShowAll] = useState(false);
+    const subtitle = settings?.blogSubtitle || "Chia sẻ kiến thức và kinh nghiệm về công nghệ";
 
     const displayedPosts = showAll
         ? posts
@@ -111,7 +113,7 @@ export default function Blog({ posts }: BlogProps) {
                             <span className="text-gradient">mới nhất</span>
                         </h2>
                         <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-                            Chia sẻ kiến thức và kinh nghiệm về công nghệ
+                            {subtitle}
                         </p>
                     </div>
                     <div className="text-center py-12">
@@ -133,7 +135,7 @@ export default function Blog({ posts }: BlogProps) {
                         <span className="text-gradient">mới nhất</span>
                     </h2>
                     <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-                        Chia sẻ kiến thức và kinh nghiệm về công nghệ
+                        {subtitle}
                     </p>
                 </div>
 

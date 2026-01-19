@@ -39,6 +39,9 @@ export interface SanitySiteSettings {
     heroTitle: string;
     heroSubtitle: string;
     heroBadge: string;
+    productsSubtitle?: string;
+    coursesSubtitle?: string;
+    blogSubtitle?: string;
     aboutTitle: string;
     aboutContent: unknown[]; // Portable Text blocks
     aboutAvatar?: {

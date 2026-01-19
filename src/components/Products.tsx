@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import PaymentModal from "./PaymentModal";
-import type { SanityProduct } from "../../sanity/lib/types";
+import type { SanityProduct, SanitySiteSettings } from "../../sanity/lib/types";
 
 // Icon components
 const Icons = {
@@ -137,14 +137,16 @@ function ProductCard({ product, onBuyClick }: ProductCardProps) {
 
 interface ProductsProps {
     products: SanityProduct[];
+    settings: SanitySiteSettings | null;
 }
 
 const INITIAL_PRODUCTS_COUNT = 4;
 
-export default function Products({ products }: ProductsProps) {
+export default function Products({ products, settings }: ProductsProps) {
     const [selectedProduct, setSelectedProduct] = useState<SanityProduct | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showAll, setShowAll] = useState(false);
+    const subtitle = settings?.productsSubtitle || "Những ứng dụng và phần mềm tôi đã xây dựng với tâm huyết";
 
     const handleBuyClick = (product: SanityProduct) => {
         setSelectedProduct(product);
@@ -175,7 +177,7 @@ export default function Products({ products }: ProductsProps) {
                             <span className="text-gradient">nổi bật</span>
                         </h2>
                         <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-                            Những ứng dụng và phần mềm tôi đã xây dựng với tâm huyết
+                            {subtitle}
                         </p>
                     </div>
                     <div className="text-center py-12">
@@ -198,7 +200,7 @@ export default function Products({ products }: ProductsProps) {
                             <span className="text-gradient">nổi bật</span>
                         </h2>
                         <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-                            Những ứng dụng và phần mềm tôi đã xây dựng với tâm huyết
+                            {subtitle}
                         </p>
                     </div>
 

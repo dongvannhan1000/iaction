@@ -39,12 +39,12 @@ export default function Navbar() {
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-1 group">
                         <img
-                            src="/brand/icon.png"
+                            src="/brand/icon-v2.png"
                             alt="IAction Icon"
                             className="h-10 w-auto object-contain group-hover:scale-105 transition-transform drop-shadow-lg"
                         />
                         <img
-                            src="/brand/text.png"
+                            src="/brand/text-v2.png"
                             alt="IAction"
                             className="h-6 w-auto object-contain group-hover:brightness-110 transition-all"
                         />

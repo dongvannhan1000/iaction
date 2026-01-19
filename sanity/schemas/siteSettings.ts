@@ -30,6 +30,24 @@ export const siteSettings = defineType({
             initialValue: "Khám phá các sản phẩm mới nhất",
         }),
         defineField({
+            name: "productsSubtitle",
+            title: "Subtitle phần Sản phẩm",
+            type: "string",
+            initialValue: "Những ứng dụng và phần mềm tôi đã xây dựng với tâm huyết",
+        }),
+        defineField({
+            name: "coursesSubtitle",
+            title: "Subtitle phần Khóa học",
+            type: "string",
+            initialValue: "Các khóa học chất lượng giúp bạn nâng cao kỹ năng",
+        }),
+        defineField({
+            name: "blogSubtitle",
+            title: "Subtitle phần Blog",
+            type: "string",
+            initialValue: "Chia sẻ kiến thức và kinh nghiệm về công nghệ",
+        }),
+        defineField({
             name: "aboutTitle",
             title: "Tiêu đề About",
             type: "string",

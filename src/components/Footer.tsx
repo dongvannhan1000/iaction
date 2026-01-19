@@ -144,11 +144,17 @@ export default function Footer({ settings }: FooterProps) {
                 {/* Bottom Bar */}
                 <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5">
                     {/* Logo */}
-                    <div className="flex items-center gap-2 mb-4 md:mb-0">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center">
-                            <span className="text-white font-bold text-sm">I</span>
-                        </div>
-                        <span className="text-lg font-bold text-white">Action</span>
+                    <div className="flex items-center gap-1 mb-4 md:mb-0">
+                        <img
+                            src="/brand/icon.png"
+                            alt="IAction Icon"
+                            className="h-8 w-auto object-contain drop-shadow-lg"
+                        />
+                        <img
+                            src="/brand/text.png"
+                            alt="IAction"
+                            className="h-5 w-auto object-contain"
+                        />
                     </div>
 
                     {/* Copyright */}

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import type { SepayPaymentInfo } from "@/lib/sepay/config";
 
 interface Product {
-    id: number;
+    id: number | string;
     name: string;
     description: string;
     price: number;
@@ -16,16 +17,24 @@ interface PaymentModalProps {
     product: Product | null;
 }
 
+type ModalState = "form" | "qr" | "success" | "error" | "expired";
+
 export default function PaymentModal({ isOpen, onClose, product }: PaymentModalProps) {
     const [formData, setFormData] = useState({
         customerName: "",
         customerEmail: "",
+        customerPhone: "",
     });
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitStatus, setSubmitStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+    const [modalState, setModalState] = useState<ModalState>("form");
+    const [paymentInfo, setPaymentInfo] = useState<SepayPaymentInfo | null>(null);
+    const [countdown, setCountdown] = useState(600); // 10 minutes
+    const [copied, setCopied] = useState<string | null>(null);
+
     const modalRef = useRef<HTMLDivElement>(null);
     const firstInputRef = useRef<HTMLInputElement>(null);
+    const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
     // Focus trap and escape key
     useEffect(() => {
@@ -47,9 +56,50 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
         };
     }, [isOpen, onClose]);
 
+    // Countdown timer
+    useEffect(() => {
+        if (modalState !== "qr" || countdown <= 0) return;
+
+        const timer = setInterval(() => {
+            setCountdown((prev) => {
+                if (prev <= 1) {
+                    setModalState("expired");
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [modalState, countdown]);
+
+    // Poll payment status
+    useEffect(() => {
+        if (modalState !== "qr" || !paymentInfo?.orderId) return;
+
+        const pollStatus = async () => {
+            try {
+                const res = await fetch(`/api/payment/status/${paymentInfo.orderId}`);
+                const data = await res.json();
+
+                if (data.success && data.data.status === "paid") {
+                    setModalState("success");
+                    if (pollingRef.current) clearInterval(pollingRef.current);
+                }
+            } catch (error) {
+                console.error("Polling error:", error);
+            }
+        };
+
+        pollingRef.current = setInterval(pollStatus, 3000);
+        return () => {
+            if (pollingRef.current) clearInterval(pollingRef.current);
+        };
+    }, [modalState, paymentInfo?.orderId]);
+
     // Click outside to close
     const handleBackdropClick = (e: React.MouseEvent) => {
-        if (e.target === e.currentTarget) {
+        if (e.target === e.currentTarget && modalState === "form") {
             onClose();
         }
     };
@@ -72,30 +122,51 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
         return Object.keys(newErrors).length === 0;
     };
 
-    // Handle submit
+    // Handle submit - create payment
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!validateForm() || !product) return;
 
         setIsSubmitting(true);
-        setSubmitStatus("loading");
 
         try {
-            // Mock API call - will be replaced with actual payment API
-            await new Promise((resolve) => setTimeout(resolve, 2000));
+            const res = await fetch("/api/payment/create", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    productId: String(product.id),
+                    productName: product.name,
+                    amount: product.price,
+                    customerEmail: formData.customerEmail,
+                    customerName: formData.customerName,
+                    customerPhone: formData.customerPhone || undefined,
+                }),
+            });
 
-            // Simulate success
-            setSubmitStatus("success");
+            const data = await res.json();
 
-            // In real implementation, redirect to Sepay payment page
-            // window.location.href = paymentUrl;
-        } catch {
-            setSubmitStatus("error");
+            if (data.success) {
+                setPaymentInfo(data.data);
+                setCountdown(600);
+                setModalState("qr");
+            } else {
+                setModalState("error");
+            }
+        } catch (error) {
+            console.error("Payment create error:", error);
+            setModalState("error");
         } finally {
             setIsSubmitting(false);
         }
     };
+
+    // Copy to clipboard
+    const handleCopy = useCallback((text: string, field: string) => {
+        navigator.clipboard.writeText(text);
+        setCopied(field);
+        setTimeout(() => setCopied(null), 2000);
+    }, []);
 
     // Format price
     const formatPrice = (price: number) => {
@@ -105,12 +176,22 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
         }).format(price);
     };
 
+    // Format countdown
+    const formatCountdown = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, "0")}`;
+    };
+
     // Reset form when modal closes
     useEffect(() => {
         if (!isOpen) {
-            setFormData({ customerName: "", customerEmail: "" });
+            setFormData({ customerName: "", customerEmail: "", customerPhone: "" });
             setErrors({});
-            setSubmitStatus("idle");
+            setModalState("form");
+            setPaymentInfo(null);
+            setCountdown(600);
+            if (pollingRef.current) clearInterval(pollingRef.current);
         }
     }, [isOpen]);
 
@@ -118,7 +199,7 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto"
             onClick={handleBackdropClick}
             role="dialog"
             aria-modal="true"
@@ -126,7 +207,7 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
         >
             <div
                 ref={modalRef}
-                className="relative w-full max-w-md glass rounded-3xl p-8 animate-fade-in-up"
+                className="relative w-full max-w-md glass rounded-3xl p-8 animate-fade-in-up my-8"
             >
                 {/* Close Button */}
                 <button
@@ -139,24 +220,156 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
                     </svg>
                 </button>
 
-                {/* Success State */}
-                {submitStatus === "success" ? (
+                {/* SUCCESS STATE */}
+                {modalState === "success" && (
                     <div className="text-center py-8">
                         <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-green-500/20 flex items-center justify-center">
                             <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
-                        <h3 className="text-2xl font-bold text-white mb-2">Đang chuyển hướng...</h3>
+                        <h3 className="text-2xl font-bold text-white mb-2">Thanh toán thành công!</h3>
                         <p className="text-gray-400 mb-6">
-                            Bạn sẽ được chuyển đến trang thanh toán. Sau khi thanh toán thành công,
-                            thông tin truy cập sẽ được gửi về email của bạn.
+                            Cảm ơn bạn đã mua hàng. Thông tin truy cập sẽ được gửi về email của bạn trong ít phút.
                         </p>
-                        <div className="animate-pulse flex justify-center">
-                            <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-                        </div>
+                        <button
+                            onClick={onClose}
+                            className="btn-primary px-8 py-3 rounded-xl font-semibold cursor-pointer"
+                        >
+                            Đóng
+                        </button>
                     </div>
-                ) : (
+                )}
+
+                {/* EXPIRED STATE */}
+                {modalState === "expired" && (
+                    <div className="text-center py-8">
+                        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-yellow-500/20 flex items-center justify-center">
+                            <svg className="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-2xl font-bold text-white mb-2">Đã hết thời gian</h3>
+                        <p className="text-gray-400 mb-6">
+                            Phiên thanh toán đã hết hạn. Vui lòng thử lại.
+                        </p>
+                        <button
+                            onClick={() => setModalState("form")}
+                            className="btn-primary px-8 py-3 rounded-xl font-semibold cursor-pointer"
+                        >
+                            Thử lại
+                        </button>
+                    </div>
+                )}
+
+                {/* ERROR STATE */}
+                {modalState === "error" && (
+                    <div className="text-center py-8">
+                        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-red-500/20 flex items-center justify-center">
+                            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </div>
+                        <h3 className="text-2xl font-bold text-white mb-2">Đã có lỗi xảy ra</h3>
+                        <p className="text-gray-400 mb-6">
+                            Không thể tạo thanh toán. Vui lòng thử lại sau.
+                        </p>
+                        <button
+                            onClick={() => setModalState("form")}
+                            className="btn-primary px-8 py-3 rounded-xl font-semibold cursor-pointer"
+                        >
+                            Thử lại
+                        </button>
+                    </div>
+                )}
+
+                {/* QR CODE STATE */}
+                {modalState === "qr" && paymentInfo && (
+                    <div className="text-center">
+                        <h2 className="text-xl font-bold text-white mb-4">Quét mã QR để thanh toán</h2>
+
+                        {/* Countdown */}
+                        <div className="mb-4">
+                            <span className="text-gray-400">Còn lại: </span>
+                            <span className={`font-mono font-bold ${countdown < 60 ? "text-red-400" : "text-green-400"}`}>
+                                {formatCountdown(countdown)}
+                            </span>
+                        </div>
+
+                        {/* QR Code */}
+                        <div className="bg-white p-4 rounded-2xl inline-block mb-6">
+                            <img
+                                src={paymentInfo.qrCodeUrl}
+                                alt="QR Code"
+                                className="w-48 h-48 mx-auto"
+                            />
+                        </div>
+
+                        {/* Bank Info */}
+                        <div className="space-y-3 text-left">
+                            <div className="flex justify-between items-center p-3 rounded-xl bg-white/5">
+                                <div>
+                                    <p className="text-xs text-gray-500">Ngân hàng</p>
+                                    <p className="text-white font-medium">{paymentInfo.bankName}</p>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-between items-center p-3 rounded-xl bg-white/5">
+                                <div>
+                                    <p className="text-xs text-gray-500">Số tài khoản</p>
+                                    <p className="text-white font-medium">{paymentInfo.bankAccount}</p>
+                                </div>
+                                <button
+                                    onClick={() => handleCopy(paymentInfo.bankAccount, "account")}
+                                    className="text-red-400 hover:text-red-300 text-sm cursor-pointer"
+                                >
+                                    {copied === "account" ? "Đã copy!" : "Copy"}
+                                </button>
+                            </div>
+
+                            <div className="flex justify-between items-center p-3 rounded-xl bg-white/5">
+                                <div>
+                                    <p className="text-xs text-gray-500">Chủ tài khoản</p>
+                                    <p className="text-white font-medium">{paymentInfo.accountHolder}</p>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-between items-center p-3 rounded-xl bg-white/5">
+                                <div>
+                                    <p className="text-xs text-gray-500">Số tiền</p>
+                                    <p className="text-red-400 font-bold text-lg">{formatPrice(paymentInfo.amount)}</p>
+                                </div>
+                                <button
+                                    onClick={() => handleCopy(paymentInfo.amount.toString(), "amount")}
+                                    className="text-red-400 hover:text-red-300 text-sm cursor-pointer"
+                                >
+                                    {copied === "amount" ? "Đã copy!" : "Copy"}
+                                </button>
+                            </div>
+
+                            <div className="flex justify-between items-center p-3 rounded-xl bg-white/5">
+                                <div>
+                                    <p className="text-xs text-gray-500">Nội dung</p>
+                                    <p className="text-white font-medium font-mono">{paymentInfo.content}</p>
+                                </div>
+                                <button
+                                    onClick={() => handleCopy(paymentInfo.content, "content")}
+                                    className="text-red-400 hover:text-red-300 text-sm cursor-pointer"
+                                >
+                                    {copied === "content" ? "Đã copy!" : "Copy"}
+                                </button>
+                            </div>
+                        </div>
+
+                        <p className="mt-6 text-xs text-gray-500">
+                            <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2" />
+                            Đang chờ thanh toán...
+                        </p>
+                    </div>
+                )}
+
+                {/* FORM STATE */}
+                {modalState === "form" && (
                     <>
                         {/* Header */}
                         <div className="mb-6">
@@ -237,14 +450,22 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
                                 )}
                             </div>
 
-                            {/* Error Message */}
-                            {submitStatus === "error" && (
-                                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30" role="alert">
-                                    <p className="text-sm text-red-400">
-                                        Đã có lỗi xảy ra. Vui lòng thử lại sau.
-                                    </p>
-                                </div>
-                            )}
+                            {/* Phone Input (Optional) */}
+                            <div>
+                                <label htmlFor="customerPhone" className="block text-sm font-medium text-gray-300 mb-2">
+                                    Số điện thoại <span className="text-gray-500">(tùy chọn)</span>
+                                </label>
+                                <input
+                                    type="tel"
+                                    id="customerPhone"
+                                    name="customerPhone"
+                                    value={formData.customerPhone}
+                                    onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
+                                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-colors"
+                                    placeholder="0912345678"
+                                    disabled={isSubmitting}
+                                />
+                            </div>
 
                             {/* Submit Button */}
                             <button

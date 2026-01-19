@@ -19,6 +19,11 @@ export const metadata: Metadata = {
   description: "Personal software & app showcase. Discover innovative applications built with passion.",
   keywords: ["software", "apps", "portfolio", "developer", "IAction"],
   authors: [{ name: "IAction" }],
+  icons: {
+    icon: "/brand/favicon.png",
+    shortcut: "/brand/favicon.png",
+    apple: "/brand/favicon.png",
+  },
   openGraph: {
     title: "IAction - From Idea to Action",
     description: "Personal software & app showcase",

@@ -28,20 +28,24 @@ export default function Navbar() {
     return (
         <nav
             className={`fixed top-4 left-4 right-4 z-50 transition-all duration-300 rounded-2xl ${isScrolled
-                    ? "glass shadow-lg shadow-black/20"
-                    : "bg-transparent"
+                ? "glass shadow-lg shadow-black/20"
+                : "bg-transparent"
                 }`}
         >
             <div className="max-w-7xl mx-auto px-6 py-4">
                 <div className="flex items-center justify-between">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center glow-red-sm group-hover:animate-pulse-glow transition-all">
-                            <span className="text-white font-bold text-lg">I</span>
-                        </div>
-                        <span className="text-xl font-bold text-white group-hover:text-red-400 transition-colors">
-                            Action
-                        </span>
+                    <Link href="/" className="flex items-center gap-1 group">
+                        <img
+                            src="/brand/icon.png"
+                            alt="IAction Icon"
+                            className="h-10 w-auto object-contain group-hover:scale-105 transition-transform drop-shadow-lg"
+                        />
+                        <img
+                            src="/brand/text.png"
+                            alt="IAction"
+                            className="h-6 w-auto object-contain group-hover:brightness-110 transition-all"
+                        />
                     </Link>
 
                     {/* Desktop Navigation */}

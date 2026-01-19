@@ -20,9 +20,9 @@ export const metadata: Metadata = {
   keywords: ["software", "apps", "portfolio", "developer", "IAction"],
   authors: [{ name: "IAction" }],
   icons: {
-    icon: "/brand/favicon.png",
-    shortcut: "/brand/favicon.png",
-    apple: "/brand/favicon.png",
+    icon: "/brand/icon-v2.png",
+    shortcut: "/brand/icon-v2.png",
+    apple: "/brand/icon-v2.png",
   },
   openGraph: {
     title: "IAction - From Idea to Action",

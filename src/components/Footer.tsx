@@ -146,12 +146,12 @@ export default function Footer({ settings }: FooterProps) {
                     {/* Logo */}
                     <div className="flex items-center gap-1 mb-4 md:mb-0">
                         <img
-                            src="/brand/icon.png"
+                            src="/brand/icon-v2.png"
                             alt="IAction Icon"
                             className="h-8 w-auto object-contain drop-shadow-lg"
                         />
                         <img
-                            src="/brand/text.png"
+                            src="/brand/text-v2.png"
                             alt="IAction"
                             className="h-5 w-auto object-contain"
                         />

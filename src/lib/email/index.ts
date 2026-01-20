@@ -109,7 +109,7 @@ function getSiteUrl(): string {
 
 // Get banner image URL
 function getBannerUrl(): string {
-    return `${getSiteUrl()}/brand/banner.jpg`;
+    return `${getSiteUrl()}/brand/banner-v2.png`;
 }
 
 // Generate payment confirmation email HTML

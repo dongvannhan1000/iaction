@@ -31,7 +31,7 @@ function BlogCard({ post }: BlogCardProps) {
     return (
         <Link
             href={`/blog/${post.slug}`}
-            className={`group relative rounded-2xl overflow-hidden glass card-hover cursor-pointer block ${post.featured ? "md:col-span-2" : ""
+            className={`group relative rounded-2xl overflow-hidden glass card-hover cursor-pointer block flex flex-col h-full ${post.featured ? "md:col-span-2" : ""
                 }`}
         >
             {post.featured && (
@@ -57,7 +57,7 @@ function BlogCard({ post }: BlogCardProps) {
                 </div>
             )}
 
-            <div className="p-6">
+            <div className="p-6 flex flex-col flex-grow">
                 {/* Category badge */}
                 <div className="flex items-center gap-3 mb-3">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium border ${categoryInfo.color}`}>
@@ -71,7 +71,12 @@ function BlogCard({ post }: BlogCardProps) {
                 <h3 className="text-xl font-bold text-white mb-3 group-hover:text-red-400 transition-colors line-clamp-2">
                     {post.title}
                 </h3>
-                <p className="text-gray-400 mb-4 line-clamp-2">{post.excerpt}</p>
+
+                {/* Excerpt with fixed min height */}
+                <p className="text-gray-400 mb-4 line-clamp-2 min-h-[48px]">{post.excerpt}</p>
+
+                {/* Spacer to push content below to bottom */}
+                <div className="flex-grow"></div>
 
                 {/* Meta info */}
                 <div className="flex items-center justify-between text-sm text-gray-500">

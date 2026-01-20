@@ -54,7 +54,7 @@ function ProductCard({ product, onBuyClick }: ProductCardProps) {
 
     return (
         <div
-            className={`group relative rounded-2xl p-6 glass card-hover cursor-pointer ${product.featured ? "md:col-span-2" : ""
+            className={`group relative rounded-2xl p-6 glass card-hover cursor-pointer flex flex-col h-full ${product.featured ? "md:col-span-2" : ""
                 }`}
         >
             {product.featured && (
@@ -70,7 +70,12 @@ function ProductCard({ product, onBuyClick }: ProductCardProps) {
             <h3 className="text-xl font-bold text-white mb-3 group-hover:text-red-400 transition-colors">
                 {product.name}
             </h3>
-            <p className="text-gray-400 mb-4 line-clamp-2">{product.description}</p>
+
+            {/* Description with fixed height */}
+            <p className="text-gray-400 mb-4 line-clamp-2 min-h-[48px]">{product.description}</p>
+
+            {/* Spacer to push content below to bottom */}
+            <div className="flex-grow"></div>
 
             <div className="flex flex-wrap gap-2 mb-4">
                 {product.platforms?.map((platform) => (

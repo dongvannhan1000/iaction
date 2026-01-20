@@ -64,7 +64,7 @@ function CourseCard({ course, onEnrollClick }: CourseCardProps) {
 
     return (
         <div
-            className={`group relative rounded-2xl p-6 glass card-hover cursor-pointer ${course.featured ? "md:col-span-2" : ""
+            className={`group relative rounded-2xl p-6 glass card-hover cursor-pointer flex flex-col h-full ${course.featured ? "md:col-span-2" : ""
                 }`}
         >
             {course.featured && (
@@ -91,7 +91,12 @@ function CourseCard({ course, onEnrollClick }: CourseCardProps) {
             <h3 className="text-xl font-bold text-white mb-3 group-hover:text-red-400 transition-colors">
                 {course.title}
             </h3>
-            <p className="text-gray-400 mb-4 line-clamp-2">{course.description}</p>
+
+            {/* Description with fixed height */}
+            <p className="text-gray-400 mb-4 line-clamp-2 min-h-[48px]">{course.description}</p>
+
+            {/* Spacer to push content below to bottom */}
+            <div className="flex-grow"></div>
 
             {/* Meta info */}
             <div className="flex flex-wrap gap-2 mb-4">

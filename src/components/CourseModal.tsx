@@ -124,10 +124,28 @@ export default function CourseModal({ isOpen, onClose, course }: CourseModalProp
         setIsSubmitting(true);
 
         try {
-            // If free course, just show success
+            // If free course, call enroll API
             if (!course.isPaid || course.price === 0) {
-                // TODO: Save enrollment to database and send email
-                setModalState("success");
+                const res = await fetch("/api/enroll", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        type: "course",
+                        itemId: course._id,
+                        itemName: course.title,
+                        customerName: formData.customerName,
+                        customerEmail: formData.customerEmail,
+                        customerPhone: formData.customerPhone || undefined,
+                        isPaid: false,
+                    }),
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    setModalState("success");
+                } else {
+                    setModalState("error");
+                }
             } else {
                 // Paid course - create payment
                 const res = await fetch("/api/payment/create", {

@@ -11,6 +11,7 @@ import {
     updatePaymentStatus,
     isPaymentProcessed,
 } from "@/lib/supabase";
+import { sendPaymentConfirmationEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
     try {
@@ -91,7 +92,15 @@ export async function POST(request: NextRequest) {
 
         console.log(`[Webhook] SUCCESS: Order ${orderCode} paid!`);
 
-        // TODO: Send confirmation email to customer
+        // 11. Send confirmation email to customer (async, don't wait)
+        sendPaymentConfirmationEmail({
+            orderCode: order.order_code,
+            customerName: order.customer_name || "Quý khách",
+            customerEmail: order.customer_email,
+            productId: order.product_id,
+            productName: order.product_name,
+            amount: Number(order.amount),
+        }).catch((err) => console.error("[Webhook] Failed to send email:", err));
 
         return NextResponse.json({
             success: true,

@@ -132,10 +132,28 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
         setIsSubmitting(true);
 
         try {
-            // If free product, show success immediately
-            // TODO: Call API to save enrollment and send email
+            // If free product, call enroll API
             if (!product.isPaid || product.price === 0) {
-                setModalState("success");
+                const res = await fetch("/api/enroll", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        type: "product",
+                        itemId: String(product.id),
+                        itemName: product.name,
+                        customerName: formData.customerName,
+                        customerEmail: formData.customerEmail,
+                        customerPhone: formData.customerPhone || undefined,
+                        isPaid: false,
+                    }),
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    setModalState("success");
+                } else {
+                    setModalState("error");
+                }
                 return;
             }
 

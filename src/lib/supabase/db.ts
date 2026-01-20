@@ -49,7 +49,7 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
     }
 
     console.log(`[Supabase] Order created: ${data.order_code}`);
-    return data;
+    return data as Order;
 }
 
 export async function getOrderByCode(orderCode: string): Promise<Order | null> {
@@ -67,7 +67,7 @@ export async function getOrderByCode(orderCode: string): Promise<Order | null> {
         throw new Error(`Failed to get order: ${error.message}`);
     }
 
-    return data;
+    return data as Order;
 }
 
 export async function getOrderById(id: string): Promise<Order | null> {
@@ -85,7 +85,7 @@ export async function getOrderById(id: string): Promise<Order | null> {
         throw new Error(`Failed to get order: ${error.message}`);
     }
 
-    return data;
+    return data as Order;
 }
 
 export async function updateOrderStatus(
@@ -107,7 +107,7 @@ export async function updateOrderStatus(
     }
 
     console.log(`[Supabase] Order ${orderId} updated to status: ${status}`);
-    return data;
+    return data as Order;
 }
 
 // =====================================
@@ -117,7 +117,8 @@ export async function updateOrderStatus(
 export async function createPayment(input: CreatePaymentInput): Promise<Payment> {
     const supabase = createServiceClient();
 
-    const paymentData = {
+    // Explicitly cast to any to avoid partial type mismatch with Json
+    const paymentData: any = {
         order_id: input.orderId,
         sepay_transaction_id: input.sepayTransactionId || null,
         payment_method: input.paymentMethod || null,
@@ -138,7 +139,7 @@ export async function createPayment(input: CreatePaymentInput): Promise<Payment>
     }
 
     console.log(`[Supabase] Payment created for order: ${input.orderId}`);
-    return data;
+    return data as Payment;
 }
 
 export async function getPaymentByOrderId(orderId: string): Promise<Payment | null> {
@@ -156,7 +157,7 @@ export async function getPaymentByOrderId(orderId: string): Promise<Payment | nu
         throw new Error(`Failed to get payment: ${error.message}`);
     }
 
-    return data;
+    return data as Payment;
 }
 
 export async function getPaymentBySepayId(sepayTransactionId: string): Promise<Payment | null> {
@@ -174,7 +175,7 @@ export async function getPaymentBySepayId(sepayTransactionId: string): Promise<P
         throw new Error(`Failed to get payment: ${error.message}`);
     }
 
-    return data;
+    return data as Payment;
 }
 
 export async function updatePaymentStatus(
@@ -184,7 +185,8 @@ export async function updatePaymentStatus(
 ): Promise<Payment> {
     const supabase = createServiceClient();
 
-    const updateData: Partial<Payment> = { status };
+    // Use any to bypass Json type compatibility check for update
+    const updateData: any = { status };
     if (webhookData) {
         updateData.webhook_received_at = new Date().toISOString();
         updateData.raw_webhook = webhookData;
@@ -203,7 +205,7 @@ export async function updatePaymentStatus(
     }
 
     console.log(`[Supabase] Payment ${paymentId} updated to status: ${status}`);
-    return data;
+    return data as Payment;
 }
 
 // =====================================

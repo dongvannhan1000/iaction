@@ -2,25 +2,17 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import type { SepayPaymentInfo } from "@/lib/sepay/config";
+import type { SanityCourse } from "../../sanity/lib/types";
 
-interface Product {
-    id: number | string;
-    name: string;
-    description: string;
-    price: number;
-    originalPrice?: number;
-    isPaid?: boolean; // false or undefined = free product
-}
-
-interface PaymentModalProps {
+interface CourseModalProps {
     isOpen: boolean;
     onClose: () => void;
-    product: Product | null;
+    course: SanityCourse | null;
 }
 
 type ModalState = "form" | "qr" | "success" | "error" | "expired";
 
-export default function PaymentModal({ isOpen, onClose, product }: PaymentModalProps) {
+export default function CourseModal({ isOpen, onClose, course }: CourseModalProps) {
     const [formData, setFormData] = useState({
         customerName: "",
         customerEmail: "",
@@ -30,7 +22,7 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [modalState, setModalState] = useState<ModalState>("form");
     const [paymentInfo, setPaymentInfo] = useState<SepayPaymentInfo | null>(null);
-    const [countdown, setCountdown] = useState(600); // 10 minutes
+    const [countdown, setCountdown] = useState(600);
     const [copied, setCopied] = useState<string | null>(null);
 
     const modalRef = useRef<HTMLDivElement>(null);
@@ -57,7 +49,7 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
         };
     }, [isOpen, onClose]);
 
-    // Countdown timer
+    // Countdown timer for paid courses
     useEffect(() => {
         if (modalState !== "qr" || countdown <= 0) return;
 
@@ -74,7 +66,7 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
         return () => clearInterval(timer);
     }, [modalState, countdown]);
 
-    // Poll payment status
+    // Poll payment status for paid courses
     useEffect(() => {
         if (modalState !== "qr" || !paymentInfo?.orderId) return;
 
@@ -123,47 +115,46 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
         return Object.keys(newErrors).length === 0;
     };
 
-    // Handle submit - create payment or free registration
+    // Handle submit
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!validateForm() || !product) return;
+        if (!validateForm() || !course) return;
 
         setIsSubmitting(true);
 
         try {
-            // If free product, show success immediately
-            // TODO: Call API to save enrollment and send email
-            if (!product.isPaid || product.price === 0) {
+            // If free course, just show success
+            if (!course.isPaid || course.price === 0) {
+                // TODO: Save enrollment to database and send email
                 setModalState("success");
-                return;
-            }
-
-            // Paid product - create payment
-            const res = await fetch("/api/payment/create", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    productId: String(product.id),
-                    productName: product.name,
-                    amount: product.price,
-                    customerEmail: formData.customerEmail,
-                    customerName: formData.customerName,
-                    customerPhone: formData.customerPhone || undefined,
-                }),
-            });
-
-            const data = await res.json();
-
-            if (data.success) {
-                setPaymentInfo(data.data);
-                setCountdown(600);
-                setModalState("qr");
             } else {
-                setModalState("error");
+                // Paid course - create payment
+                const res = await fetch("/api/payment/create", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        productId: course._id,
+                        productName: course.title,
+                        amount: course.price,
+                        customerEmail: formData.customerEmail,
+                        customerName: formData.customerName,
+                        customerPhone: formData.customerPhone || undefined,
+                    }),
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    setPaymentInfo(data.data);
+                    setCountdown(600);
+                    setModalState("qr");
+                } else {
+                    setModalState("error");
+                }
             }
         } catch (error) {
-            console.error("Payment/registration error:", error);
+            console.error("Submit error:", error);
             setModalState("error");
         } finally {
             setIsSubmitting(false);
@@ -204,7 +195,9 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
         }
     }, [isOpen]);
 
-    if (!isOpen || !product) return null;
+    if (!isOpen || !course) return null;
+
+    const isFree = !course.isPaid || course.price === 0;
 
     return (
         <div
@@ -237,13 +230,11 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
-                        <h3 className="text-2xl font-bold text-white mb-2">
-                            {product?.isPaid && product?.price > 0 ? "Thanh toán thành công!" : "Đăng ký thành công!"}
-                        </h3>
+                        <h3 className="text-2xl font-bold text-white mb-2">Đăng ký thành công!</h3>
                         <p className="text-gray-400 mb-6">
-                            {product?.isPaid && product?.price > 0
-                                ? "Cảm ơn bạn đã mua hàng. Thông tin truy cập sẽ được gửi về email của bạn trong ít phút."
-                                : "Bạn đã đăng ký thành công. Thông tin truy cập sẽ được gửi về email của bạn."
+                            {isFree
+                                ? "Bạn đã đăng ký khóa học thành công. Thông tin truy cập sẽ được gửi về email của bạn."
+                                : "Cảm ơn bạn đã thanh toán. Thông tin truy cập khóa học sẽ được gửi về email của bạn trong ít phút."
                             }
                         </p>
                         <button
@@ -286,7 +277,7 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
                         </div>
                         <h3 className="text-2xl font-bold text-white mb-2">Đã có lỗi xảy ra</h3>
                         <p className="text-gray-400 mb-6">
-                            Không thể tạo thanh toán. Vui lòng thử lại sau.
+                            Không thể xử lý yêu cầu. Vui lòng thử lại sau.
                         </p>
                         <button
                             onClick={() => setModalState("form")}
@@ -297,7 +288,7 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
                     </div>
                 )}
 
-                {/* QR CODE STATE */}
+                {/* QR CODE STATE - Only for paid courses */}
                 {modalState === "qr" && paymentInfo && (
                     <div className="text-center">
                         <h2 className="text-xl font-bold text-white mb-4">Quét mã QR để thanh toán</h2>
@@ -388,41 +379,41 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
                         {/* Header */}
                         <div className="mb-6">
                             <h2 id="modal-title" className="text-2xl font-bold text-white mb-2">
-                                {product.isPaid && product.price > 0 ? "Mua" : "Nhận"} {product.name}
+                                {isFree ? "Đăng ký khóa học" : "Mua khóa học"}
                             </h2>
                             <p className="text-gray-400 text-sm">
-                                {product.isPaid && product.price > 0
-                                    ? "Điền thông tin để nhận quyền truy cập qua email"
-                                    : "Điền thông tin để nhận sản phẩm miễn phí qua email"
+                                {isFree
+                                    ? "Điền thông tin để nhận quyền truy cập miễn phí"
+                                    : "Điền thông tin để nhận quyền truy cập qua email"
                                 }
                             </p>
                         </div>
 
-                        {/* Product Summary */}
+                        {/* Course Summary */}
                         <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-6">
                             <div className="flex justify-between items-center mb-2">
-                                <span className="text-gray-300">{product.name}</span>
+                                <span className="text-gray-300">{course.title}</span>
                                 <div className="text-right">
-                                    {product.isPaid && product.price > 0 ? (
+                                    {isFree ? (
+                                        <span className="text-lg font-bold text-green-400">Miễn phí</span>
+                                    ) : (
                                         <>
-                                            {product.originalPrice && (
+                                            {course.originalPrice && (
                                                 <span className="text-sm text-gray-500 line-through mr-2">
-                                                    {formatPrice(product.originalPrice)}
+                                                    {formatPrice(course.originalPrice)}
                                                 </span>
                                             )}
                                             <span className="text-lg font-bold text-red-400">
-                                                {formatPrice(product.price)}
+                                                {formatPrice(course.price)}
                                             </span>
                                         </>
-                                    ) : (
-                                        <span className="text-lg font-bold text-green-400">Miễn phí</span>
                                     )}
                                 </div>
                             </div>
                             <p className="text-xs text-gray-500">
-                                {product.isPaid && product.price > 0
-                                    ? "Thanh toán qua VietQR / Chuyển khoản ngân hàng"
-                                    : "Đăng ký để nhận quyền truy cập ngay"
+                                {isFree
+                                    ? "Đăng ký để nhận quyền truy cập ngay"
+                                    : "Thanh toán qua VietQR / Chuyển khoản ngân hàng"
                                 }
                             </p>
                         </div>
@@ -506,7 +497,7 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
                                     </>
                                 ) : (
                                     <>
-                                        {product.isPaid && product.price > 0 ? `Thanh toán ${formatPrice(product.price)}` : "Nhận ngay"}
+                                        {isFree ? "Đăng ký ngay" : `Thanh toán ${formatPrice(course.price)}`}
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                         </svg>
@@ -520,7 +511,7 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
                             <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
-                            {product.isPaid && product.price > 0 ? "Thanh toán an toàn qua Sepay" : "Thông tin của bạn được bảo mật"}
+                            {isFree ? "Thông tin của bạn được bảo mật" : "Thanh toán an toàn qua Sepay"}
                         </p>
                     </>
                 )}

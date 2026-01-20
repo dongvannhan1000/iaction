@@ -1,6 +1,8 @@
 import { groq } from "next-sanity";
 
 // Get all products ordered by 'order' field
+// NOTE: productUrl and usageGuide are NOT included for security reasons
+// They should only be fetched by backend for email after payment
 export const productsQuery = groq`
   *[_type == "product"] | order(order asc) {
     _id,
@@ -14,8 +16,7 @@ export const productsQuery = groq`
     originalPrice,
     isPaid,
     featured,
-    demoUrl,
-    productUrl
+    demoUrl
   }
 `;
 
@@ -43,6 +44,7 @@ export const siteSettingsQuery = groq`
 `;
 
 // Get single product by slug
+// NOTE: productUrl and usageGuide are NOT included for security reasons
 export const productBySlugQuery = groq`
   *[_type == "product" && slug.current == $slug][0] {
     _id,
@@ -56,12 +58,13 @@ export const productBySlugQuery = groq`
     originalPrice,
     isPaid,
     featured,
-    demoUrl,
-    productUrl
+    demoUrl
   }
 `;
 
 // Get all courses ordered by 'order' field
+// NOTE: courseUrl is NOT included for security reasons
+// It should only be fetched by backend for email after payment/enrollment
 export const coursesQuery = groq`
   *[_type == "course"] | order(order asc) {
     _id,
@@ -76,8 +79,7 @@ export const coursesQuery = groq`
     price,
     originalPrice,
     isPaid,
-    featured,
-    courseUrl
+    featured
   }
 `;
 
@@ -114,3 +116,26 @@ export const blogPostBySlugQuery = groq`
   }
 `;
 
+// ==========================================
+// BACKEND-ONLY QUERIES (for email service)
+// WARNING: These contain sensitive data - NEVER use from frontend
+// ==========================================
+
+// Get product with sensitive data for email (backend only)
+export const productWithSensitiveDataQuery = groq`
+  *[_type == "product" && _id == $productId][0] {
+    _id,
+    name,
+    productUrl,
+    usageGuide
+  }
+`;
+
+// Get course with sensitive data for email (backend only)
+export const courseWithSensitiveDataQuery = groq`
+  *[_type == "course" && _id == $courseId][0] {
+    _id,
+    title,
+    courseUrl
+  }
+`;

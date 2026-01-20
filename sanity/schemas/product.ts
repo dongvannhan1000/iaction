@@ -108,6 +108,13 @@ export const product = defineType({
             type: "number",
             initialValue: 0,
         }),
+        defineField({
+            name: "usageGuide",
+            title: "Hướng dẫn sử dụng",
+            type: "text",
+            rows: 10,
+            description: "Hướng dẫn sử dụng sản phẩm (sẽ được gửi qua email sau khi thanh toán)",
+        }),
     ],
     orderings: [
         {

@@ -101,27 +101,19 @@ function ProductCard({ product, onBuyClick }: ProductCardProps) {
             </div>
 
             <div className="flex items-center gap-3">
-                {product.isPaid ? (
-                    <button
-                        onClick={() => onBuyClick(product)}
-                        className="flex-1 btn-primary py-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                        Mua ngay
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button
+                    onClick={() => onBuyClick(product)}
+                    className="flex-1 btn-primary py-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 cursor-pointer"
+                >
+                    {product.isPaid && product.price > 0 ? "Mua ngay" : "Nhận ngay"}
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        {product.isPaid && product.price > 0 ? (
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                    </button>
-                ) : (
-                    <Link
-                        href={product.productUrl || "#"}
-                        className="flex-1 btn-primary py-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                        Dùng ngay
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                    </Link>
-                )}
+                        ) : (
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        )}
+                    </svg>
+                </button>
                 {product.demoUrl && (
                     <Link
                         href={product.demoUrl}
@@ -140,13 +132,20 @@ interface ProductsProps {
     settings: SanitySiteSettings | null;
 }
 
-const INITIAL_PRODUCTS_COUNT = 4;
+const INITIAL_PRODUCTS_COUNT = 6;
 
 export default function Products({ products, settings }: ProductsProps) {
     const [selectedProduct, setSelectedProduct] = useState<SanityProduct | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showAll, setShowAll] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
     const subtitle = settings?.productsSubtitle || "Những ứng dụng và phần mềm tôi đã xây dựng với tâm huyết";
+
+    // Filter products by search term
+    const filteredProducts = products.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const handleBuyClick = (product: SanityProduct) => {
         setSelectedProduct(product);
@@ -159,11 +158,11 @@ export default function Products({ products, settings }: ProductsProps) {
     };
 
     const displayedProducts = showAll
-        ? products
-        : products.slice(0, INITIAL_PRODUCTS_COUNT);
+        ? filteredProducts
+        : filteredProducts.slice(0, INITIAL_PRODUCTS_COUNT);
 
-    const hasMoreProducts = products.length > INITIAL_PRODUCTS_COUNT;
-    const remainingCount = products.length - INITIAL_PRODUCTS_COUNT;
+    const hasMoreProducts = filteredProducts.length > INITIAL_PRODUCTS_COUNT;
+    const remainingCount = filteredProducts.length - INITIAL_PRODUCTS_COUNT;
 
     // If no products from Sanity, show empty state
     if (!products || products.length === 0) {
@@ -199,44 +198,87 @@ export default function Products({ products, settings }: ProductsProps) {
                             <span className="text-white">Sản phẩm </span>
                             <span className="text-gradient">nổi bật</span>
                         </h2>
-                        <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                        <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-8">
                             {subtitle}
                         </p>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {displayedProducts.map((product) => (
-                            <ProductCard
-                                key={product._id}
-                                product={product}
-                                onBuyClick={handleBuyClick}
+                        {/* Search Input */}
+                        <div className="max-w-md mx-auto relative">
+                            <input
+                                type="text"
+                                placeholder="Tìm kiếm sản phẩm..."
+                                value={searchTerm}
+                                onChange={(e) => {
+                                    setSearchTerm(e.target.value);
+                                    setShowAll(false); // Reset to initial view when searching
+                                }}
+                                className="w-full px-5 py-3 pl-12 rounded-xl glass border border-white/10 bg-white/5 text-white placeholder-gray-500 focus:border-red-500/50 focus:outline-none transition-colors"
                             />
-                        ))}
+                            <svg
+                                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            {searchTerm && (
+                                <button
+                                    onClick={() => setSearchTerm("")}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
                     </div>
 
-                    {hasMoreProducts && (
-                        <div className="text-center mt-12">
-                            <button
-                                onClick={() => setShowAll(!showAll)}
-                                className="btn-outline px-8 py-4 rounded-full font-semibold inline-flex items-center gap-3 cursor-pointer"
-                            >
-                                {showAll ? (
-                                    <>
-                                        Thu gọn
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                                        </svg>
-                                    </>
-                                ) : (
-                                    <>
-                                        Xem thêm {remainingCount} sản phẩm
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </>
-                                )}
-                            </button>
+                    {/* No results message */}
+                    {filteredProducts.length === 0 && searchTerm && (
+                        <div className="text-center py-12">
+                            <p className="text-gray-500">Không tìm thấy sản phẩm nào phù hợp với "{searchTerm}"</p>
                         </div>
+                    )}
+
+                    {filteredProducts.length > 0 && (
+                        <>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {displayedProducts.map((product) => (
+                                    <ProductCard
+                                        key={product._id}
+                                        product={product}
+                                        onBuyClick={handleBuyClick}
+                                    />
+                                ))}
+                            </div>
+
+                            {hasMoreProducts && (
+                                <div className="text-center mt-12">
+                                    <button
+                                        onClick={() => setShowAll(!showAll)}
+                                        className="btn-outline px-8 py-4 rounded-full font-semibold inline-flex items-center gap-3 cursor-pointer"
+                                    >
+                                        {showAll ? (
+                                            <>
+                                                Thu gọn
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                                </svg>
+                                            </>
+                                        ) : (
+                                            <>
+                                                Xem thêm {remainingCount} sản phẩm
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </section>
@@ -245,11 +287,12 @@ export default function Products({ products, settings }: ProductsProps) {
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
                 product={selectedProduct ? {
-                    id: parseInt(selectedProduct._id.replace(/\D/g, '')) || 1,
+                    id: selectedProduct._id,
                     name: selectedProduct.name,
                     description: selectedProduct.description,
                     price: selectedProduct.price,
                     originalPrice: selectedProduct.originalPrice,
+                    isPaid: selectedProduct.isPaid,
                 } : null}
             />
         </>

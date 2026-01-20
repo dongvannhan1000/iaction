@@ -159,7 +159,7 @@ export default function Footer({ settings }: FooterProps) {
 
                     {/* Copyright */}
                     <p className="text-gray-500 text-sm">
-                        © 2025 {siteName}. Tất cả quyền được bảo lưu.
+                        © 2026 {siteName}.
                     </p>
                 </div>
             </div>

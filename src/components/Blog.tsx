@@ -88,18 +88,25 @@ interface BlogProps {
     settings: SanitySiteSettings | null;
 }
 
-const INITIAL_POSTS_COUNT = 4;
+const INITIAL_POSTS_COUNT = 6;
 
 export default function Blog({ posts, settings }: BlogProps) {
     const [showAll, setShowAll] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
     const subtitle = settings?.blogSubtitle || "Chia sẻ kiến thức và kinh nghiệm về công nghệ";
 
-    const displayedPosts = showAll
-        ? posts
-        : posts.slice(0, INITIAL_POSTS_COUNT);
+    // Filter posts by search term
+    const filteredPosts = posts.filter((post) =>
+        post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        post.excerpt?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-    const hasMorePosts = posts.length > INITIAL_POSTS_COUNT;
-    const remainingCount = posts.length - INITIAL_POSTS_COUNT;
+    const displayedPosts = showAll
+        ? filteredPosts
+        : filteredPosts.slice(0, INITIAL_POSTS_COUNT);
+
+    const hasMorePosts = filteredPosts.length > INITIAL_POSTS_COUNT;
+    const remainingCount = filteredPosts.length - INITIAL_POSTS_COUNT;
 
     // If no posts from Sanity, show empty state
     if (!posts || posts.length === 0) {
@@ -134,43 +141,86 @@ export default function Blog({ posts, settings }: BlogProps) {
                         <span className="text-white">Bài viết </span>
                         <span className="text-gradient">mới nhất</span>
                     </h2>
-                    <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                    <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-8">
                         {subtitle}
                     </p>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {displayedPosts.map((post) => (
-                        <BlogCard
-                            key={post._id}
-                            post={post}
+                    {/* Search Input */}
+                    <div className="max-w-md mx-auto relative">
+                        <input
+                            type="text"
+                            placeholder="Tìm kiếm bài viết..."
+                            value={searchTerm}
+                            onChange={(e) => {
+                                setSearchTerm(e.target.value);
+                                setShowAll(false);
+                            }}
+                            className="w-full px-5 py-3 pl-12 rounded-xl glass border border-white/10 bg-white/5 text-white placeholder-gray-500 focus:border-red-500/50 focus:outline-none transition-colors"
                         />
-                    ))}
+                        <svg
+                            className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        {searchTerm && (
+                            <button
+                                onClick={() => setSearchTerm("")}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        )}
+                    </div>
                 </div>
 
-                {hasMorePosts && (
-                    <div className="text-center mt-12">
-                        <button
-                            onClick={() => setShowAll(!showAll)}
-                            className="btn-outline px-8 py-4 rounded-full font-semibold inline-flex items-center gap-3 cursor-pointer"
-                        >
-                            {showAll ? (
-                                <>
-                                    Thu gọn
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                                    </svg>
-                                </>
-                            ) : (
-                                <>
-                                    Xem thêm {remainingCount} bài viết
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </>
-                            )}
-                        </button>
+                {/* No results message */}
+                {filteredPosts.length === 0 && searchTerm && (
+                    <div className="text-center py-12">
+                        <p className="text-gray-500">Không tìm thấy bài viết nào phù hợp với "{searchTerm}"</p>
                     </div>
+                )}
+
+                {filteredPosts.length > 0 && (
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {displayedPosts.map((post) => (
+                                <BlogCard
+                                    key={post._id}
+                                    post={post}
+                                />
+                            ))}
+                        </div>
+
+                        {hasMorePosts && (
+                            <div className="text-center mt-12">
+                                <button
+                                    onClick={() => setShowAll(!showAll)}
+                                    className="btn-outline px-8 py-4 rounded-full font-semibold inline-flex items-center gap-3 cursor-pointer"
+                                >
+                                    {showAll ? (
+                                        <>
+                                            Thu gọn
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                            </svg>
+                                        </>
+                                    ) : (
+                                        <>
+                                            Xem thêm {remainingCount} bài viết
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
         </section>

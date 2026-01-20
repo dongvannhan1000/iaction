@@ -17,6 +17,7 @@ export interface SanityProduct {
     featured: boolean;
     demoUrl?: string;
     productUrl?: string;
+    usageGuide?: string; // Only fetched by backend for email, NOT sent to frontend
 }
 
 export interface SanitySkill {

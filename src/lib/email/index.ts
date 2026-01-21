@@ -109,7 +109,7 @@ function getSiteUrl(): string {
 
 // Get banner image URL
 function getBannerUrl(): string {
-    return `${getSiteUrl()}/brand/banner-v2.png`;
+    return `${getSiteUrl()}/brand/banner-email.png`;
 }
 
 // Generate payment confirmation email HTML
@@ -126,15 +126,15 @@ function generatePaymentEmailHtml(
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xác nhận thanh toán</title>
 </head>
-<body style="margin: 0; padding: 0; background-color: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0a; padding: 40px 20px;">
+<body style="margin: 0; padding: 0; background-color: #0A0A0F; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0A0A0F; padding: 40px 20px;">
         <tr>
             <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 16px; overflow: hidden;">
+                <table width="600" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #111118 0%, #1C1C24 100%); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);">
                     <!-- Header with Banner -->
                     <tr>
-                        <td style="padding: 30px 40px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                            <img src="${getBannerUrl()}" alt="${siteName}" style="max-width: 200px; height: auto;" />
+                        <td style="padding: 0; text-align: center; border-bottom: 1px solid rgba(220, 38, 38, 0.15);">
+                            <img src="${getBannerUrl()}" alt="${siteName}" style="max-width: 100%; height: auto; display: block;" />
                         </td>
                     </tr>
                     
@@ -229,15 +229,15 @@ function generateFreeProductEmailHtml(
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng ký thành công</title>
 </head>
-<body style="margin: 0; padding: 0; background-color: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0a; padding: 40px 20px;">
+<body style="margin: 0; padding: 0; background-color: #0A0A0F; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0A0A0F; padding: 40px 20px;">
         <tr>
             <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 16px; overflow: hidden;">
+                <table width="600" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #111118 0%, #1C1C24 100%); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);">
                     <!-- Header with Banner -->
                     <tr>
-                        <td style="padding: 30px 40px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                            <img src="${getBannerUrl()}" alt="${siteName}" style="max-width: 200px; height: auto;" />
+                        <td style="padding: 0; text-align: center; border-bottom: 1px solid rgba(220, 38, 38, 0.15);">
+                            <img src="${getBannerUrl()}" alt="${siteName}" style="max-width: 100%; height: auto; display: block;" />
                         </td>
                     </tr>
                     
@@ -319,15 +319,15 @@ function generateCourseEnrollmentEmailHtml(
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng ký khóa học thành công</title>
 </head>
-<body style="margin: 0; padding: 0; background-color: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0a; padding: 40px 20px;">
+<body style="margin: 0; padding: 0; background-color: #0A0A0F; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0A0A0F; padding: 40px 20px;">
         <tr>
             <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 16px; overflow: hidden;">
+                <table width="600" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #111118 0%, #1C1C24 100%); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);">
                     <!-- Header with Banner -->
                     <tr>
-                        <td style="padding: 30px 40px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                            <img src="${getBannerUrl()}" alt="${siteName}" style="max-width: 200px; height: auto;" />
+                        <td style="padding: 0; text-align: center; border-bottom: 1px solid rgba(220, 38, 38, 0.15);">
+                            <img src="${getBannerUrl()}" alt="${siteName}" style="max-width: 100%; height: auto; display: block;" />
                         </td>
                     </tr>
                     

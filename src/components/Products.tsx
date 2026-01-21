@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import PaymentModal from "./PaymentModal";
-import type { SanityProduct, SanitySiteSettings } from "../../sanity/lib/types";
+import type { SanityProduct, SanitySiteSettings, SanityProductCategory } from "../../sanity/lib/types";
 
 // Icon components
 const Icons = {
@@ -78,12 +78,12 @@ function ProductCard({ product, onBuyClick }: ProductCardProps) {
             <div className="flex-grow"></div>
 
             <div className="flex flex-wrap gap-2 mb-4">
-                {product.platforms?.map((platform) => (
+                {product.categories?.map((category) => (
                     <span
-                        key={platform}
-                        className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-gray-300 border border-white/10"
+                        key={category._id}
+                        className="px-3 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20"
                     >
-                        {platform}
+                        {category.name}
                     </span>
                 ))}
             </div>
@@ -134,23 +134,28 @@ function ProductCard({ product, onBuyClick }: ProductCardProps) {
 
 interface ProductsProps {
     products: SanityProduct[];
+    categories: SanityProductCategory[];
     settings: SanitySiteSettings | null;
 }
 
 const INITIAL_PRODUCTS_COUNT = 6;
 
-export default function Products({ products, settings }: ProductsProps) {
+export default function Products({ products, categories, settings }: ProductsProps) {
     const [selectedProduct, setSelectedProduct] = useState<SanityProduct | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showAll, setShowAll] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const subtitle = settings?.productsSubtitle || "Những ứng dụng và phần mềm tôi đã xây dựng với tâm huyết";
 
-    // Filter products by search term
-    const filteredProducts = products.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Filter products by search term and category
+    const filteredProducts = products.filter((product) => {
+        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.description?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = !selectedCategory ||
+            product.categories?.some((cat) => cat.slug === selectedCategory);
+        return matchesSearch && matchesCategory;
+    });
 
     const handleBuyClick = (product: SanityProduct) => {
         setSelectedProduct(product);
@@ -240,10 +245,47 @@ export default function Products({ products, settings }: ProductsProps) {
                         </div>
                     </div>
 
+                    {/* Category Filter Pills */}
+                    {categories.length > 0 && (
+                        <div className="flex flex-wrap justify-center gap-2 mb-8">
+                            <button
+                                onClick={() => {
+                                    setSelectedCategory(null);
+                                    setShowAll(false);
+                                }}
+                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all cursor-pointer ${selectedCategory === null
+                                        ? "bg-red-500 text-white"
+                                        : "bg-white/5 text-gray-300 border border-white/10 hover:border-red-500/50"
+                                    }`}
+                            >
+                                Tất cả
+                            </button>
+                            {categories.map((category) => (
+                                <button
+                                    key={category._id}
+                                    onClick={() => {
+                                        setSelectedCategory(category.slug);
+                                        setShowAll(false);
+                                    }}
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all cursor-pointer ${selectedCategory === category.slug
+                                            ? "bg-red-500 text-white"
+                                            : "bg-white/5 text-gray-300 border border-white/10 hover:border-red-500/50"
+                                        }`}
+                                >
+                                    {category.name}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
                     {/* No results message */}
-                    {filteredProducts.length === 0 && searchTerm && (
+                    {filteredProducts.length === 0 && (searchTerm || selectedCategory) && (
                         <div className="text-center py-12">
-                            <p className="text-gray-500">Không tìm thấy sản phẩm nào phù hợp với "{searchTerm}"</p>
+                            <p className="text-gray-500">
+                                Không tìm thấy sản phẩm nào
+                                {searchTerm && ` phù hợp với "${searchTerm}"`}
+                                {selectedCategory && ` trong danh mục này`}
+                            </p>
                         </div>
                     )}
 

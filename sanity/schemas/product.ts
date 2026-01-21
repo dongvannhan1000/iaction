@@ -52,20 +52,11 @@ export const product = defineType({
             },
         }),
         defineField({
-            name: "platforms",
-            title: "Nền tảng",
+            name: "categories",
+            title: "Danh mục",
             type: "array",
-            of: [{ type: "string" }],
-            options: {
-                list: [
-                    { title: "Web", value: "Web" },
-                    { title: "iOS", value: "iOS" },
-                    { title: "Android", value: "Android" },
-                    { title: "Windows", value: "Windows" },
-                    { title: "macOS", value: "macOS" },
-                    { title: "Desktop", value: "Desktop" },
-                ],
-            },
+            of: [{ type: "reference", to: [{ type: "productCategory" }] }],
+            description: "Chọn một hoặc nhiều danh mục cho sản phẩm",
         }),
         defineField({
             name: "price",

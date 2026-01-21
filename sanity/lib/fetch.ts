@@ -1,6 +1,6 @@
 import { client } from "./client";
-import { productsQuery, siteSettingsQuery, productBySlugQuery, coursesQuery, blogPostsQuery, blogPostBySlugQuery } from "./queries";
-import type { SanityProduct, SanitySiteSettings, SanityCourse, SanityBlogPost } from "./types";
+import { productsQuery, siteSettingsQuery, productBySlugQuery, coursesQuery, blogPostsQuery, blogPostBySlugQuery, productCategoriesQuery } from "./queries";
+import type { SanityProduct, SanitySiteSettings, SanityCourse, SanityBlogPost, SanityProductCategory } from "./types";
 
 /**
  * Fetch all products from Sanity
@@ -11,6 +11,19 @@ export async function getProducts(): Promise<SanityProduct[]> {
         return products || [];
     } catch (error) {
         console.error("Error fetching products:", error);
+        return [];
+    }
+}
+
+/**
+ * Fetch all product categories from Sanity
+ */
+export async function getProductCategories(): Promise<SanityProductCategory[]> {
+    try {
+        const categories = await client.fetch<SanityProductCategory[]>(productCategoriesQuery);
+        return categories || [];
+    } catch (error) {
+        console.error("Error fetching product categories:", error);
         return [];
     }
 }

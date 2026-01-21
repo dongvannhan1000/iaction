@@ -11,7 +11,7 @@ export const productsQuery = groq`
     description,
     icon,
     iconType,
-    platforms,
+    "categories": categories[]->{ _id, name, "slug": slug.current },
     price,
     originalPrice,
     isPaid,
@@ -19,6 +19,17 @@ export const productsQuery = groq`
     demoUrl
   }
 `;
+
+// Get all product categories
+export const productCategoriesQuery = groq`
+  *[_type == "productCategory"] | order(order asc) {
+    _id,
+    name,
+    "slug": slug.current,
+    description
+  }
+`;
+
 
 // Get site settings
 export const siteSettingsQuery = groq`

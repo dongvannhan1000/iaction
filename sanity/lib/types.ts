@@ -10,7 +10,7 @@ export interface SanityProduct {
         };
     };
     iconType?: "cube" | "code" | "chart" | "document" | "video" | "server";
-    platforms: string[];
+    categories?: SanityProductCategory[];
     price: number;
     originalPrice?: number;
     isPaid: boolean;
@@ -18,6 +18,13 @@ export interface SanityProduct {
     demoUrl?: string;
     productUrl?: string;
     usageGuide?: string; // Only fetched by backend for email, NOT sent to frontend
+}
+
+export interface SanityProductCategory {
+    _id: string;
+    name: string;
+    slug: string;
+    description?: string;
 }
 
 export interface SanitySkill {

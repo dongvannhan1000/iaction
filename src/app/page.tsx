@@ -5,17 +5,18 @@ import Courses from "@/components/Courses";
 import Blog from "@/components/Blog";
 import About from "@/components/About";
 import Footer from "@/components/Footer";
-import { getProducts, getSiteSettings, getCourses, getBlogPosts } from "../../sanity/lib/fetch";
+import { getProducts, getSiteSettings, getCourses, getBlogPosts, getProductCategories } from "../../sanity/lib/fetch";
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export default async function Home() {
   // Fetch data from Sanity (server-side)
-  const [products, settings, courses, blogPosts] = await Promise.all([
+  const [products, settings, courses, blogPosts, productCategories] = await Promise.all([
     getProducts(),
     getSiteSettings(),
     getCourses(),
     getBlogPosts(),
+    getProductCategories(),
   ]);
 
   return (
@@ -23,7 +24,7 @@ export default async function Home() {
       <Navbar />
       <main>
         <Hero settings={settings} />
-        <Products products={products} settings={settings} />
+        <Products products={products} categories={productCategories} settings={settings} />
         <Courses courses={courses} settings={settings} />
         <Blog posts={blogPosts} settings={settings} />
         <About settings={settings} />

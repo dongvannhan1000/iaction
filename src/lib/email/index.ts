@@ -130,79 +130,97 @@ function generatePaymentEmailHtml(
     <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0A0A0F; padding: 40px 20px;">
         <tr>
             <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #111118 0%, #1C1C24 100%); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);">
+                <table width="600" cellpadding="0" cellspacing="0" style="background: #111118; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);">
                     <!-- Header with Banner -->
                     <tr>
-                        <td style="padding: 0; text-align: center; border-bottom: 1px solid rgba(220, 38, 38, 0.15);">
+                        <td style="padding: 0;">
                             <img src="${getBannerUrl()}" alt="${siteName}" style="max-width: 100%; height: auto; display: block;" />
                         </td>
                     </tr>
                     
-                    <!-- Success Icon -->
+                    <!-- Red Accent Stripe -->
                     <tr>
-                        <td style="padding: 40px 40px 20px; text-align: center;">
-                            <div style="width: 80px; height: 80px; background: rgba(34, 197, 94, 0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">
-                                <span style="font-size: 40px;">✓</span>
-                            </div>
-                        </td>
+                        <td style="height: 4px; background: linear-gradient(90deg, #DC2626 0%, #EF4444 50%, #DC2626 100%);"></td>
                     </tr>
                     
                     <!-- Content -->
                     <tr>
-                        <td style="padding: 0 40px 40px;">
-                            <h2 style="margin: 0 0 10px; color: #ffffff; font-size: 24px; text-align: center;">Thanh toán thành công!</h2>
-                            <p style="margin: 0 0 30px; color: #9ca3af; font-size: 16px; text-align: center;">
-                                Xin chào <strong style="color: #ffffff;">${order.customerName}</strong>, cảm ơn bạn đã mua hàng.
-                            </p>
+                        <td style="padding: 40px;">
+                            <!-- Greeting -->
+                            <p style="margin: 0 0 8px; color: #71717A; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Xin chào ${order.customerName}</p>
+                            <h1 style="margin: 0 0 24px; color: #FAFAFA; font-size: 28px; font-weight: 700; line-height: 1.2;">Thanh toán<br/><span style="color: #22C55E;">thành công!</span></h1>
                             
-                            <!-- Order Details -->
-                            <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
-                                <h3 style="margin: 0 0 15px; color: #ffffff; font-size: 16px;">Chi tiết đơn hàng</h3>
-                                <table width="100%" style="color: #9ca3af; font-size: 14px;">
-                                    <tr>
-                                        <td style="padding: 8px 0;">Mã đơn hàng:</td>
-                                        <td style="text-align: right; color: #ffffff; font-family: monospace;">${order.orderCode}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 8px 0;">Sản phẩm:</td>
-                                        <td style="text-align: right; color: #ffffff;">${order.productName}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 8px 0;">Số tiền:</td>
-                                        <td style="text-align: right; color: #ef4444; font-weight: bold;">${formatPrice(order.amount)}</td>
-                                    </tr>
-                                </table>
-                            </div>
+                            <!-- Divider -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+                                <tr>
+                                    <td style="width: 40px; height: 2px; background: #DC2626;"></td>
+                                    <td style="height: 2px; background: #27272A;"></td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Order Details Card -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background: #1C1C24; border-radius: 12px; border-left: 3px solid #DC2626; margin-bottom: 24px;">
+                                <tr>
+                                    <td style="padding: 20px;">
+                                        <p style="margin: 0 0 16px; color: #71717A; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Chi tiết đơn hàng</p>
+                                        <table width="100%" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td style="padding: 8px 0; color: #A1A1AA; font-size: 14px; border-bottom: 1px solid #27272A;">Mã đơn hàng</td>
+                                                <td style="padding: 8px 0; color: #FAFAFA; font-size: 14px; font-family: monospace; text-align: right; border-bottom: 1px solid #27272A;">${order.orderCode}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 8px 0; color: #A1A1AA; font-size: 14px; border-bottom: 1px solid #27272A;">Sản phẩm</td>
+                                                <td style="padding: 8px 0; color: #FAFAFA; font-size: 14px; text-align: right; border-bottom: 1px solid #27272A;">${order.productName}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 12px 0; color: #FAFAFA; font-size: 14px; font-weight: 600;">Tổng thanh toán</td>
+                                                <td style="padding: 12px 0; color: #DC2626; font-size: 18px; font-weight: 700; text-align: right;">${formatPrice(order.amount)}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
                             
                             ${productData?.productUrl ? `
-                            <!-- Access Button -->
-                            <div style="text-align: center; margin-bottom: 30px;">
-                                <a href="${productData.productUrl}" style="display: inline-block; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-size: 16px; font-weight: bold;">
-                                    🔗 Truy cập sản phẩm
-                                </a>
-                            </div>
+                            <!-- CTA Button -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="${productData.productUrl}" style="display: inline-block; background: #DC2626; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-size: 14px; font-weight: 600; letter-spacing: 0.5px;">TRUY CẬP SẢN PHẨM →</a>
+                                    </td>
+                                </tr>
+                            </table>
                             ` : ''}
                             
                             ${productData?.usageGuide ? `
                             <!-- Usage Guide -->
-                            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
-                                <h3 style="margin: 0 0 15px; color: #ef4444; font-size: 16px;">📖 Hướng dẫn sử dụng</h3>
-                                <p style="margin: 0; color: #d1d5db; font-size: 14px; white-space: pre-wrap; line-height: 1.6;">${productData.usageGuide}</p>
-                            </div>
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background: #1C1C24; border-radius: 12px; margin-bottom: 24px;">
+                                <tr>
+                                    <td style="padding: 20px;">
+                                        <p style="margin: 0 0 12px; color: #FAFAFA; font-size: 14px; font-weight: 600;">Hướng dẫn sử dụng</p>
+                                        <p style="margin: 0; color: #A1A1AA; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${productData.usageGuide}</p>
+                                    </td>
+                                </tr>
+                            </table>
                             ` : ''}
                             
-                            <p style="margin: 0; color: #6b7280; font-size: 13px; text-align: center;">
-                                Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi.
+                            <!-- Footer Text -->
+                            <p style="margin: 0; color: #52525B; font-size: 13px; line-height: 1.5;">
+                                Cảm ơn bạn đã tin tưởng ${siteName}.<br/>
+                                Nếu có thắc mắc, đừng ngần ngại liên hệ với chúng tôi.
                             </p>
                         </td>
                     </tr>
                     
                     <!-- Footer -->
                     <tr>
-                        <td style="padding: 20px 40px; background: rgba(0,0,0,0.3); text-align: center;">
-                            <p style="margin: 0; color: #6b7280; font-size: 12px;">
-                                © ${new Date().getFullYear()} ${siteName}. All rights reserved.
-                            </p>
+                        <td style="padding: 20px 40px; background: #0A0A0F; border-top: 1px solid #27272A;">
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td style="color: #52525B; font-size: 12px;">© ${new Date().getFullYear()} ${siteName}</td>
+                                    <td style="text-align: right; color: #52525B; font-size: 12px;">Made with ❤️ in Vietnam</td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
                 </table>
@@ -233,66 +251,93 @@ function generateFreeProductEmailHtml(
     <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0A0A0F; padding: 40px 20px;">
         <tr>
             <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #111118 0%, #1C1C24 100%); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);">
+                <table width="600" cellpadding="0" cellspacing="0" style="background: #111118; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);">
                     <!-- Header with Banner -->
                     <tr>
-                        <td style="padding: 0; text-align: center; border-bottom: 1px solid rgba(220, 38, 38, 0.15);">
+                        <td style="padding: 0;">
                             <img src="${getBannerUrl()}" alt="${siteName}" style="max-width: 100%; height: auto; display: block;" />
                         </td>
                     </tr>
                     
-                    <!-- Success Icon -->
+                    <!-- Red Accent Stripe -->
                     <tr>
-                        <td style="padding: 40px 40px 20px; text-align: center;">
-                            <div style="width: 80px; height: 80px; background: rgba(34, 197, 94, 0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">
-                                <span style="font-size: 40px;">🎉</span>
-                            </div>
-                        </td>
+                        <td style="height: 4px; background: linear-gradient(90deg, #DC2626 0%, #EF4444 50%, #DC2626 100%);"></td>
                     </tr>
                     
                     <!-- Content -->
                     <tr>
-                        <td style="padding: 0 40px 40px;">
-                            <h2 style="margin: 0 0 10px; color: #ffffff; font-size: 24px; text-align: center;">Đăng ký thành công!</h2>
-                            <p style="margin: 0 0 30px; color: #9ca3af; font-size: 16px; text-align: center;">
-                                Xin chào <strong style="color: #ffffff;">${customerName}</strong>, bạn đã nhận được sản phẩm miễn phí.
-                            </p>
+                        <td style="padding: 40px;">
+                            <!-- Greeting -->
+                            <p style="margin: 0 0 8px; color: #71717A; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Xin chào ${customerName}</p>
+                            <h1 style="margin: 0 0 24px; color: #FAFAFA; font-size: 28px; font-weight: 700; line-height: 1.2;">Bạn đã nhận được<br/><span style="color: #22C55E;">${productName}</span></h1>
                             
-                            <!-- Product Info -->
-                            <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 30px; text-align: center;">
-                                <h3 style="margin: 0 0 10px; color: #22c55e; font-size: 18px;">${productName}</h3>
-                                <span style="color: #22c55e; font-size: 14px;">✨ Miễn phí</span>
-                            </div>
+                            <!-- Divider -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+                                <tr>
+                                    <td style="width: 40px; height: 2px; background: #DC2626;"></td>
+                                    <td style="height: 2px; background: #27272A;"></td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Product Card -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background: #1C1C24; border-radius: 12px; border-left: 3px solid #22C55E; margin-bottom: 24px;">
+                                <tr>
+                                    <td style="padding: 20px;">
+                                        <table width="100%" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td>
+                                                    <p style="margin: 0 0 4px; color: #71717A; font-size: 12px; text-transform: uppercase;">Sản phẩm</p>
+                                                    <p style="margin: 0; color: #FAFAFA; font-size: 16px; font-weight: 600;">${productName}</p>
+                                                </td>
+                                                <td style="text-align: right; vertical-align: middle;">
+                                                    <span style="display: inline-block; background: rgba(34, 197, 94, 0.15); color: #22C55E; padding: 6px 12px; border-radius: 100px; font-size: 12px; font-weight: 600;">MIỄN PHÍ</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
                             
                             ${productData?.productUrl ? `
-                            <!-- Access Button -->
-                            <div style="text-align: center; margin-bottom: 30px;">
-                                <a href="${productData.productUrl}" style="display: inline-block; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-size: 16px; font-weight: bold;">
-                                    🔗 Truy cập sản phẩm
-                                </a>
-                            </div>
+                            <!-- CTA Button -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="${productData.productUrl}" style="display: inline-block; background: #DC2626; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-size: 14px; font-weight: 600; letter-spacing: 0.5px;">TRUY CẬP NGAY →</a>
+                                    </td>
+                                </tr>
+                            </table>
                             ` : ''}
                             
                             ${productData?.usageGuide ? `
                             <!-- Usage Guide -->
-                            <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
-                                <h3 style="margin: 0 0 15px; color: #22c55e; font-size: 16px;">📖 Hướng dẫn sử dụng</h3>
-                                <p style="margin: 0; color: #d1d5db; font-size: 14px; white-space: pre-wrap; line-height: 1.6;">${productData.usageGuide}</p>
-                            </div>
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background: #1C1C24; border-radius: 12px; margin-bottom: 24px;">
+                                <tr>
+                                    <td style="padding: 20px;">
+                                        <p style="margin: 0 0 12px; color: #FAFAFA; font-size: 14px; font-weight: 600;">Hướng dẫn sử dụng</p>
+                                        <p style="margin: 0; color: #A1A1AA; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${productData.usageGuide}</p>
+                                    </td>
+                                </tr>
+                            </table>
                             ` : ''}
                             
-                            <p style="margin: 0; color: #6b7280; font-size: 13px; text-align: center;">
-                                Cảm ơn bạn đã quan tâm đến sản phẩm của chúng tôi!
+                            <!-- Footer Text -->
+                            <p style="margin: 0; color: #52525B; font-size: 13px; line-height: 1.5;">
+                                Cảm ơn bạn đã tin tưởng sử dụng sản phẩm của ${siteName}.<br/>
+                                Nếu có thắc mắc, đừng ngần ngại liên hệ với chúng tôi.
                             </p>
                         </td>
                     </tr>
                     
                     <!-- Footer -->
                     <tr>
-                        <td style="padding: 20px 40px; background: rgba(0,0,0,0.3); text-align: center;">
-                            <p style="margin: 0; color: #6b7280; font-size: 12px;">
-                                © ${new Date().getFullYear()} ${siteName}. All rights reserved.
-                            </p>
+                        <td style="padding: 20px 40px; background: #0A0A0F; border-top: 1px solid #27272A;">
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td style="color: #52525B; font-size: 12px;">© ${new Date().getFullYear()} ${siteName}</td>
+                                    <td style="text-align: right; color: #52525B; font-size: 12px;">Made with ❤️ in Vietnam</td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
                 </table>
@@ -311,6 +356,10 @@ function generateCourseEnrollmentEmailHtml(
     siteName: string,
     isPaid: boolean
 ): string {
+    const accentColor = isPaid ? '#DC2626' : '#22C55E';
+    const statusText = isPaid ? 'ĐÃ THANH TOÁN' : 'MIỄN PHÍ';
+    const headingText = isPaid ? 'Thanh toán thành công!' : 'Đăng ký thành công!';
+
     return `
 <!DOCTYPE html>
 <html>
@@ -323,63 +372,81 @@ function generateCourseEnrollmentEmailHtml(
     <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0A0A0F; padding: 40px 20px;">
         <tr>
             <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #111118 0%, #1C1C24 100%); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);">
+                <table width="600" cellpadding="0" cellspacing="0" style="background: #111118; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);">
                     <!-- Header with Banner -->
                     <tr>
-                        <td style="padding: 0; text-align: center; border-bottom: 1px solid rgba(220, 38, 38, 0.15);">
+                        <td style="padding: 0;">
                             <img src="${getBannerUrl()}" alt="${siteName}" style="max-width: 100%; height: auto; display: block;" />
                         </td>
                     </tr>
                     
-                    <!-- Success Icon -->
+                    <!-- Red Accent Stripe -->
                     <tr>
-                        <td style="padding: 40px 40px 20px; text-align: center;">
-                            <div style="width: 80px; height: 80px; background: rgba(59, 130, 246, 0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">
-                                <span style="font-size: 40px;">🎓</span>
-                            </div>
-                        </td>
+                        <td style="height: 4px; background: linear-gradient(90deg, #DC2626 0%, #EF4444 50%, #DC2626 100%);"></td>
                     </tr>
                     
                     <!-- Content -->
                     <tr>
-                        <td style="padding: 0 40px 40px;">
-                            <h2 style="margin: 0 0 10px; color: #ffffff; font-size: 24px; text-align: center;">
-                                ${isPaid ? "Thanh toán thành công!" : "Đăng ký thành công!"}
-                            </h2>
-                            <p style="margin: 0 0 30px; color: #9ca3af; font-size: 16px; text-align: center;">
-                                Xin chào <strong style="color: #ffffff;">${enrollment.customerName}</strong>, 
-                                ${isPaid ? "cảm ơn bạn đã mua khóa học." : "bạn đã đăng ký khóa học miễn phí."}
-                            </p>
+                        <td style="padding: 40px;">
+                            <!-- Greeting -->
+                            <p style="margin: 0 0 8px; color: #71717A; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Xin chào ${enrollment.customerName}</p>
+                            <h1 style="margin: 0 0 24px; color: #FAFAFA; font-size: 28px; font-weight: 700; line-height: 1.2;">${headingText.split(' ')[0]}<br/><span style="color: #22C55E;">${headingText.split(' ').slice(1).join(' ')}</span></h1>
                             
-                            <!-- Course Info -->
-                            <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 30px; text-align: center;">
-                                <h3 style="margin: 0 0 10px; color: #3b82f6; font-size: 18px;">📚 ${enrollment.courseName}</h3>
-                                <span style="color: ${isPaid ? '#ef4444' : '#22c55e'}; font-size: 14px;">
-                                    ${isPaid ? '💳 Đã thanh toán' : '✨ Miễn phí'}
-                                </span>
-                            </div>
+                            <!-- Divider -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+                                <tr>
+                                    <td style="width: 40px; height: 2px; background: #DC2626;"></td>
+                                    <td style="height: 2px; background: #27272A;"></td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Course Card -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background: #1C1C24; border-radius: 12px; border-left: 3px solid #3B82F6; margin-bottom: 24px;">
+                                <tr>
+                                    <td style="padding: 20px;">
+                                        <table width="100%" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td>
+                                                    <p style="margin: 0 0 4px; color: #71717A; font-size: 12px; text-transform: uppercase;">Khóa học</p>
+                                                    <p style="margin: 0; color: #FAFAFA; font-size: 16px; font-weight: 600;">${enrollment.courseName}</p>
+                                                </td>
+                                                <td style="text-align: right; vertical-align: middle;">
+                                                    <span style="display: inline-block; background: rgba(${isPaid ? '220, 38, 38' : '34, 197, 94'}, 0.15); color: ${accentColor}; padding: 6px 12px; border-radius: 100px; font-size: 12px; font-weight: 600;">${statusText}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
                             
                             ${courseData?.courseUrl ? `
-                            <!-- Access Button -->
-                            <div style="text-align: center; margin-bottom: 30px;">
-                                <a href="${courseData.courseUrl}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-size: 16px; font-weight: bold;">
-                                    🎬 Bắt đầu học ngay
-                                </a>
-                            </div>
+                            <!-- CTA Button -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="${courseData.courseUrl}" style="display: inline-block; background: #3B82F6; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-size: 14px; font-weight: 600; letter-spacing: 0.5px;">BẮT ĐẦU HỌC NGAY →</a>
+                                    </td>
+                                </tr>
+                            </table>
                             ` : ''}
                             
-                            <p style="margin: 0; color: #6b7280; font-size: 13px; text-align: center;">
-                                Chúc bạn học tập hiệu quả! Nếu có câu hỏi, hãy liên hệ với chúng tôi.
+                            <!-- Footer Text -->
+                            <p style="margin: 0; color: #52525B; font-size: 13px; line-height: 1.5;">
+                                Chúc bạn học tập hiệu quả với ${siteName}!<br/>
+                                Nếu có thắc mắc, đừng ngần ngại liên hệ với chúng tôi.
                             </p>
                         </td>
                     </tr>
                     
                     <!-- Footer -->
                     <tr>
-                        <td style="padding: 20px 40px; background: rgba(0,0,0,0.3); text-align: center;">
-                            <p style="margin: 0; color: #6b7280; font-size: 12px;">
-                                © ${new Date().getFullYear()} ${siteName}. All rights reserved.
-                            </p>
+                        <td style="padding: 20px 40px; background: #0A0A0F; border-top: 1px solid #27272A;">
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td style="color: #52525B; font-size: 12px;">© ${new Date().getFullYear()} ${siteName}</td>
+                                    <td style="text-align: right; color: #52525B; font-size: 12px;">Made with ❤️ in Vietnam</td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
                 </table>
@@ -409,9 +476,9 @@ export async function sendPaymentConfirmationEmail(order: OrderInfo): Promise<bo
         const html = generatePaymentEmailHtml(order, productData, siteName);
 
         const { error } = await resend.emails.send({
-            from: `${siteName} <${senderEmail}>`,
+            from: `${siteName} <${senderEmail} > `,
             to: order.customerEmail,
-            subject: `✅ Xác nhận thanh toán - ${order.productName}`,
+            subject: `✅ Xác nhận thanh toán - ${order.productName} `,
             html,
         });
 
@@ -420,7 +487,7 @@ export async function sendPaymentConfirmationEmail(order: OrderInfo): Promise<bo
             return false;
         }
 
-        console.log(`[Email] Payment confirmation sent to: ${order.customerEmail}`);
+        console.log(`[Email] Payment confirmation sent to: ${order.customerEmail} `);
         return true;
     } catch (error) {
         console.error("[Email] Error sending payment confirmation:", error);
@@ -447,9 +514,9 @@ export async function sendFreeProductEmail(
         const html = generateFreeProductEmailHtml(customerName, productName, productData, siteName);
 
         const { error } = await resend.emails.send({
-            from: `${siteName} <${senderEmail}>`,
+            from: `${siteName} <${senderEmail} > `,
             to: customerEmail,
-            subject: `🎉 Bạn đã nhận được ${productName}`,
+            subject: `🎉 Bạn đã nhận được ${productName} `,
             html,
         });
 
@@ -458,7 +525,7 @@ export async function sendFreeProductEmail(
             return false;
         }
 
-        console.log(`[Email] Free product email sent to: ${customerEmail}`);
+        console.log(`[Email] Free product email sent to: ${customerEmail} `);
         return true;
     } catch (error) {
         console.error("[Email] Error sending free product email:", error);
@@ -483,11 +550,11 @@ export async function sendCourseEnrollmentEmail(
         const html = generateCourseEnrollmentEmailHtml(enrollment, courseData, siteName, isPaid);
 
         const { error } = await resend.emails.send({
-            from: `${siteName} <${senderEmail}>`,
+            from: `${siteName} <${senderEmail} > `,
             to: enrollment.customerEmail,
             subject: isPaid
-                ? `✅ Xác nhận thanh toán khóa học - ${enrollment.courseName}`
-                : `🎓 Chào mừng đến với khóa học ${enrollment.courseName}`,
+                ? `✅ Xác nhận thanh toán khóa học - ${enrollment.courseName} `
+                : `🎓 Chào mừng đến với khóa học ${enrollment.courseName} `,
             html,
         });
 
@@ -496,7 +563,7 @@ export async function sendCourseEnrollmentEmail(
             return false;
         }
 
-        console.log(`[Email] Course enrollment email sent to: ${enrollment.customerEmail}`);
+        console.log(`[Email] Course enrollment email sent to: ${enrollment.customerEmail} `);
         return true;
     } catch (error) {
         console.error("[Email] Error sending course enrollment email:", error);

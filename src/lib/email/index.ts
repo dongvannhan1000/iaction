@@ -134,7 +134,7 @@ function generatePaymentEmailHtml(
                     <!-- Header with Banner -->
                     <tr>
                         <td style="padding: 0;">
-                            <img src="${getBannerUrl()}" alt="${siteName}" style="max-width: 100%; height: auto; display: block;" />
+                            <img src="${getBannerUrl()}" alt="${siteName}" style="width: 100%; max-width: 100%; height: auto; display: block;" />
                         </td>
                     </tr>
                     
@@ -255,7 +255,7 @@ function generateFreeProductEmailHtml(
                     <!-- Header with Banner -->
                     <tr>
                         <td style="padding: 0;">
-                            <img src="${getBannerUrl()}" alt="${siteName}" style="max-width: 100%; height: auto; display: block;" />
+                            <img src="${getBannerUrl()}" alt="${siteName}" style="width: 100%; max-width: 100%; height: auto; display: block;" />
                         </td>
                     </tr>
                     
@@ -376,7 +376,7 @@ function generateCourseEnrollmentEmailHtml(
                     <!-- Header with Banner -->
                     <tr>
                         <td style="padding: 0;">
-                            <img src="${getBannerUrl()}" alt="${siteName}" style="max-width: 100%; height: auto; display: block;" />
+                            <img src="${getBannerUrl()}" alt="${siteName}" style="width: 100%; max-width: 100%; height: auto; display: block;" />
                         </td>
                     </tr>
                     

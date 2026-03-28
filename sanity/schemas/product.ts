@@ -110,7 +110,7 @@ export const product = defineType({
             name: "isExternal",
             title: "Sản phẩm không mua hàng tại đây",
             type: "boolean",
-            description: "Nếu tích, nút thanh toán sẽ điều hướng sang Landing Page khác",
+            description: "Nếu tích, nút hành động (Mua ngay/Nhận ngay) sẽ điều hướng thẳng sang Landing Page khác",
             initialValue: false,
         }),
         defineField({

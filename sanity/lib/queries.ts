@@ -16,7 +16,9 @@ export const productsQuery = groq`
     originalPrice,
     isPaid,
     featured,
-    demoUrl
+    demoUrl,
+    isExternal,
+    externalUrl
   }
 `;
 
@@ -69,7 +71,9 @@ export const productBySlugQuery = groq`
     originalPrice,
     isPaid,
     featured,
-    demoUrl
+    demoUrl,
+    isExternal,
+    externalUrl
   }
 `;
 
@@ -90,7 +94,9 @@ export const coursesQuery = groq`
     price,
     originalPrice,
     isPaid,
-    featured
+    featured,
+    isExternal,
+    externalUrl
   }
 `;
 

@@ -10,6 +10,8 @@ interface Product {
     price: number;
     originalPrice?: number;
     isPaid?: boolean; // false or undefined = free product
+    isExternal?: boolean;
+    externalUrl?: string;
 }
 
 interface PaymentModalProps {

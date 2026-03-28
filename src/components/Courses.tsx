@@ -164,6 +164,10 @@ export default function Courses({ courses, settings }: CoursesProps) {
     const subtitle = settings?.coursesSubtitle || "Các khóa học chất lượng giúp bạn nâng cao kỹ năng";
 
     const handleEnrollClick = (course: SanityCourse) => {
+        if (course.isExternal && course.externalUrl) {
+            window.open(course.externalUrl, "_blank", "noopener,noreferrer");
+            return;
+        }
         setSelectedCourse(course);
         setIsModalOpen(true);
     };

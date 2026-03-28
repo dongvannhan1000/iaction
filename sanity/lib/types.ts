@@ -17,6 +17,8 @@ export interface SanityProduct {
     featured: boolean;
     demoUrl?: string;
     productUrl?: string;
+    isExternal?: boolean;
+    externalUrl?: string;
     usageGuide?: string; // Only fetched by backend for email, NOT sent to frontend
 }
 
@@ -87,6 +89,8 @@ export interface SanityCourse {
     isPaid: boolean;
     featured: boolean;
     courseUrl?: string;
+    isExternal?: boolean;
+    externalUrl?: string;
 }
 
 export interface SanityBlogPost {

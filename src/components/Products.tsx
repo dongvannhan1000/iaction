@@ -158,6 +158,10 @@ export default function Products({ products, categories, settings }: ProductsPro
     });
 
     const handleBuyClick = (product: SanityProduct) => {
+        if (product.isExternal && product.externalUrl) {
+            window.open(product.externalUrl, "_blank", "noopener,noreferrer");
+            return;
+        }
         setSelectedProduct(product);
         setIsModalOpen(true);
     };

@@ -112,6 +112,26 @@ export const course = defineType({
             type: "number",
             initialValue: 0,
         }),
+        defineField({
+            name: "isExternal",
+            title: "Sản phẩm không mua hàng tại đây",
+            type: "boolean",
+            description: "Nếu tích, nút thanh toán sẽ điều hướng sang Landing Page khác",
+            initialValue: false,
+        }),
+        defineField({
+            name: "externalUrl",
+            title: "Link Landing Page ngoại",
+            type: "url",
+            hidden: ({ parent }) => !parent?.isExternal,
+            validation: (Rule) => Rule.custom((url, context) => {
+                const parent = context.parent as { isExternal?: boolean };
+                if (parent?.isExternal && !url) {
+                    return "Bắt buộc phải nhập Link Landing Page khi chọn Sản phẩm không mua hàng tại đây";
+                }
+                return true;
+            }),
+        }),
     ],
     orderings: [
         {
